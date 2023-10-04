@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм»
 
 * Студент: [Константин Серов](https://up.htmlacademy.ru/javascript/30/user/2338943).
-* Наставник: `Неизвестно`.
+* Наставник: [Кенан Агаев](https://htmlacademy.ru/profile/kenakula).
 
 ---
 
