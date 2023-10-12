@@ -1,35 +1,50 @@
-function isLessThanMaxLength(string, maxLength) {
-  return string.length <= maxLength;
-}
+const isLessThanMaxLength = (string, maxLength) => string.length <= maxLength;
 
-function isPalindrome(srcString) {
-  let normalizeString = (srcString.replaceAll(' ', '')).toLowerCase();
+const isPalindrome = (srcString) => {
+
+  const normalizedString = srcString.replaceAll(' ', '').toLowerCase();
   let reverseString = '';
-  for (let i = normalizeString.length - 1; i >= 0 ; i--) {
-    reverseString += normalizeString.at(i);
-    console.log(i + 'reverseString: ' + reverseString);
+
+  for (let i = normalizedString.length - 1; i >= 0 ; i--) {
+
+    reverseString += normalizedString.at(i);
+
   }
-  return normalizeString === reverseString;
-}
 
-function getNumbers(srcString) {
+  return normalizedString === reverseString;
+};
+
+const getNumbers = (srcString) => {
+
   let outputNumbers = '';
-  let normalizeString = Number.isNaN(srcString) ? srcString : String(srcString);
+  const normalizedString = String(srcString);
 
-  for (let i = 0; i < normalizeString.length; i++) {
-    switch (normalizeString.at(i)) {
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-        outputNumbers += normalizeString.at(i);
+  for (let i = 0; i < normalizedString.length; i++) {
+
+    if (normalizedString.at(i) === '0') {
+      outputNumbers += normalizedString.at(i);
+    } else if (normalizedString.at(i) === '1') {
+      outputNumbers += normalizedString.at(i);
+    } else if (normalizedString.at(i) === '2') {
+      outputNumbers += normalizedString.at(i);
+    } else if (normalizedString.at(i) === '3') {
+      outputNumbers += normalizedString.at(i);
+    } else if (normalizedString.at(i) === '4') {
+      outputNumbers += normalizedString.at(i);
+    } else if (normalizedString.at(i) === '5') {
+      outputNumbers += normalizedString.at(i);
+    } else if (normalizedString.at(i) === '6') {
+      outputNumbers += normalizedString.at(i);
+    } else if (normalizedString.at(i) === '7') {
+      outputNumbers += normalizedString.at(i);
+    } else if (normalizedString.at(i) === '8') {
+      outputNumbers += normalizedString.at(i);
+    } else if (normalizedString.at(i) === '9') {
+      outputNumbers += normalizedString.at(i);
     }
   }
-  return +parseInt(outputNumbers);
-}
+
+  return parseInt(outputNumbers);
+};
 
 getNumbers('s3sc4-24.5');
