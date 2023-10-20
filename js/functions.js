@@ -16,35 +16,35 @@ const isPalindrome = (srcString) => {
 
 const getNumbers = (srcString) => {
 
-  let outputNumbers = '';
-  const normalizedString = String(srcString);
+  const string = String(srcString);
+  const putToLine = (i) => outNumbers += string.at(i);
+  let outNumbers = '';
 
-  for (let i = 0; i < normalizedString.length; i++) {
+  for (let i = 0; i < string.length; i++) {
 
-    if (normalizedString.at(i) === '0') {
-      outputNumbers += normalizedString.at(i);
-    } else if (normalizedString.at(i) === '1') {
-      outputNumbers += normalizedString.at(i);
-    } else if (normalizedString.at(i) === '2') {
-      outputNumbers += normalizedString.at(i);
-    } else if (normalizedString.at(i) === '3') {
-      outputNumbers += normalizedString.at(i);
-    } else if (normalizedString.at(i) === '4') {
-      outputNumbers += normalizedString.at(i);
-    } else if (normalizedString.at(i) === '5') {
-      outputNumbers += normalizedString.at(i);
-    } else if (normalizedString.at(i) === '6') {
-      outputNumbers += normalizedString.at(i);
-    } else if (normalizedString.at(i) === '7') {
-      outputNumbers += normalizedString.at(i);
-    } else if (normalizedString.at(i) === '8') {
-      outputNumbers += normalizedString.at(i);
-    } else if (normalizedString.at(i) === '9') {
-      outputNumbers += normalizedString.at(i);
+    if (string.at(i) === '0') {
+      putToLine(i);
+    } else if (string.at(i) === '1') {
+      putToLine(i);
+    } else if (string.at(i) === '2') {
+      putToLine(i);
+    } else if (string.at(i) === '3') {
+      putToLine(i);
+    } else if (string.at(i) === '4') {
+      putToLine(i);
+    } else if (string.at(i) === '5') {
+      putToLine(i);
+    } else if (string.at(i) === '6') {
+      putToLine(i);
+    } else if (string.at(i) === '7') {
+      putToLine(i);
+    } else if (string.at(i) === '8') {
+      putToLine(i);
+    } else if (string.at(i) === '9') {
+      putToLine(i);
     }
   }
 
-  return parseInt(outputNumbers);
+  return parseInt(outNumbers);
 };
 
-getNumbers('s3sc4-24.5');
