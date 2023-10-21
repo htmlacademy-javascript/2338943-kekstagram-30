@@ -48,3 +48,80 @@ const getNumbers = (srcString) => {
   return parseInt(outNumbers);
 };
 
+function isIntraday(srcStartDay, srcEndDay, srcStartMeeting, srcDuration) {
+
+  const convertToNumbers = () => {
+    startDay = srcStartDay.split(':');
+    startDay[0] = Number(startDay[0]);
+    startDay[1] = Number(startDay[1]);
+
+    endDay = srcEndDay.split(':');
+    endDay[0] = Number(endDay[0]);
+    endDay[1] = Number(endDay[1]);
+
+    startMeeting = srcStartMeeting.split(':');
+    startMeeting[0] = Number(startMeeting[0]);
+    startMeeting[1] = Number(startMeeting[1]);
+
+  };
+
+  const getEndMeeting = () => {
+
+    let duration;
+    duration = Number(srcDuration);
+    const hoursMeeting = Math.floor(duration / 60);
+    const minutesMeeting = duration % 60;
+
+    endMeeting[0] = Number(startMeeting[0]) + hoursMeeting;
+    endMeeting[1] = Number(startMeeting[1] + minutesMeeting);
+
+    if (endMeeting[1] > 60) {
+      endMeeting[0] += Math.floor(srcDuration / 60);
+      endMeeting[1] = srcDuration % 60;
+    }
+  };
+
+  const checkTime = () => {
+
+    let isIntraday;
+
+    if (endMeeting[0] >= 24) {
+
+      isIntraday = false;
+      // console.log('Встреча вне суток! Вне рабочего дня!');
+
+    } else if (endMeeting[0] > endDay[0] || startMeeting[0] < startDay[0]) {
+
+      isIntraday = false;
+      // console.log('Встреча вне рабочего дня!');
+
+    } else if (endMeeting[0] = endDay[0] && endMeeting[1] > endDay[1]) {
+
+      isIntraday = false;
+      // console.log('Встреча вне рабочего дня!');
+
+    } else {
+
+      isIntraday = true;
+      // console.log(`Встреча внутри рабочего дня!`);
+    }
+
+    return isIntraday;
+  };
+
+  let startDay;
+  let endDay;
+  let startMeeting;
+  const endMeeting = [];
+
+  convertToNumbers();
+  getEndMeeting();
+
+  return checkTime();
+}
+
+console.log(isIntraday('08:00', '17:30', '14:00', 90));
+console.log(isIntraday('8:0', '10:0', '8:0', 120));
+console.log(isIntraday('08:00', '14:30', '14:00', 90));
+console.log(isIntraday('14:00', '17:30', '08:0', 90));
+console.log(isIntraday('8:00', '17:30', '08:00', 900));
