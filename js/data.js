@@ -69,4 +69,4 @@ function getPictures(quantity) {
 }
 
 
-export {DESCRIPTIONS, COMMENTS, getPictures};
+export {getPictures};
