@@ -8,7 +8,7 @@ const miniatureSample = document
 const createMiniature = ({url, description, comments, likes}) => {
 
   const miniature = miniatureSample.cloneNode(true);
-  
+
   miniature.querySelector('.picture__img').src = url;
   miniature.querySelector('.picture__img').alt = description;
   miniature.querySelector('.picture__comments').textContent = comments.length;
@@ -18,9 +18,8 @@ const createMiniature = ({url, description, comments, likes}) => {
 };
 
 const renderMiniature = (pictures) => {
-  
   const miniatures = document.createDocumentFragment();
-  
+
   pictures.forEach((picture) => {
     const miniature = createMiniature(picture);
     miniatures.append(miniature);

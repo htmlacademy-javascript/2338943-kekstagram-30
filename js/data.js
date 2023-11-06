@@ -44,14 +44,15 @@ const COMMENTS = [
 
 const getComments = () => {
   const comments = [];
+
   for (let i = 0; i <= getRandomInteger(0, 30); i++) {
     comments.push(COMMENTS[getRandomInteger(0, COMMENTS.length - 1)]);
   }
+
   return comments;
 };
 
 function getPictures(quantity) {
-
   const generatedId = getUniqueNumber(1, quantity);
   const generatedUrl = getUniqueNumber(1, quantity);
 
@@ -63,10 +64,7 @@ function getPictures(quantity) {
     comments: getComments(),
   });
 
-  const arrayObjects = Array.from({length: quantity}, object);
-
-  return arrayObjects;
+  return Array.from({length: quantity}, object);
 }
-
 
 export {getPictures};
