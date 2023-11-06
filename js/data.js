@@ -1,3 +1,5 @@
+import {getRandomInteger, getUniqueNumber} from './util.js';
+
 const DESCRIPTIONS = [
   'Зимний отпуск',
   'Прогулка в парке',
@@ -40,4 +42,29 @@ const COMMENTS = [
   'Запретили выкладывать фотки со вчерашнего мероприятия, поэтому ловите утреннюю меня 😂 всем хорошего воскресенья ☺',
 ];
 
-export {DESCRIPTIONS, COMMENTS};
+const getComments = () => {
+  const comments = [];
+
+  for (let i = 0; i <= getRandomInteger(0, 30); i++) {
+    comments.push(COMMENTS[getRandomInteger(0, COMMENTS.length - 1)]);
+  }
+
+  return comments;
+};
+
+function getPictures(quantity) {
+  const generatedId = getUniqueNumber(1, quantity);
+  const generatedUrl = getUniqueNumber(1, quantity);
+
+  const object = () => ({
+    id: generatedId(),
+    url: `photos/${generatedUrl()}.jpg`,
+    description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
+    likes: getRandomInteger(1, 200),
+    comments: getComments(),
+  });
+
+  return Array.from({length: quantity}, object);
+}
+
+export {getPictures};

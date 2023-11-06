@@ -62,7 +62,6 @@ function isIntraday(srcStartDay, srcEndDay, srcStartMeeting, srcDuration) {
     startMeeting = srcStartMeeting.split(':');
     startMeeting[0] = Number(startMeeting[0]);
     startMeeting[1] = Number(startMeeting[1]);
-
   };
 
   const getEndMeeting = () => {
@@ -120,8 +119,8 @@ function isIntraday(srcStartDay, srcEndDay, srcStartMeeting, srcDuration) {
   return checkTime();
 }
 
-console.log(isIntraday('08:00', '17:30', '14:00', 90));
-console.log(isIntraday('8:0', '10:0', '8:0', 120));
-console.log(isIntraday('08:00', '14:30', '14:00', 90));
-console.log(isIntraday('14:00', '17:30', '08:0', 90));
-console.log(isIntraday('8:00', '17:30', '08:00', 900));
+// console.log(isIntraday('08:00', '17:30', '14:00', 90));
+// console.log(isIntraday('8:0', '10:0', '8:0', 120));
+// console.log(isIntraday('08:00', '14:30', '14:00', 90));
+// console.log(isIntraday('14:00', '17:30', '08:0', 90));
+// console.log(isIntraday('8:00', '17:30', '08:00', 900));
