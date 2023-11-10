@@ -1,6 +1,6 @@
 import {getPictures} from './data.js';
-import {renderMiniature} from './renderer.js';
+import {renderGallery} from './gallery.js';
 
 const pictures = getPictures(25);
 
-renderMiniature(pictures);
+renderGallery(pictures);

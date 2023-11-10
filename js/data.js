@@ -8,7 +8,7 @@ const DESCRIPTIONS = [
   'В командировке',
 ];
 
-const COMMENTS = [
+const MESSAGES = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!',
   'Всё отлично!',
   'Поняла, что давно не ходила по магазинам, когда отвалилась подошва от сандалей 😂 не будьте как я, не доводите свои любимые вещи до такого состояния ☺ в итоге нашла оч красивое платье 👗, крутость которого не передаёт мобильная фотография 😮 иногда фотографу нужен фотограф 😂',
@@ -42,29 +42,67 @@ const COMMENTS = [
   'Запретили выкладывать фотки со вчерашнего мероприятия, поэтому ловите утреннюю меня 😂 всем хорошего воскресенья ☺',
 ];
 
-const getComments = () => {
-  const comments = [];
+const NAMES = [
+  'Миша',
+  'Ваня',
+  'Лёша',
+  'Петя',
+  'Даша',
+  'Света',
+  'Кирилл',
+  'Саша',
+  'Юра',
+  'Гриша',
+  'Паша',
+  'Наташа',
+  'Костя',
+  'Лена',
+  'Федя',
+  'Блюма',
+  'Рома',
+  'Настя',
+  'Аня',
+  'Тоня',
+  'Люба',
+  'Гоша',
+  'Галя',
+];
 
-  for (let i = 0; i <= getRandomInteger(0, 30); i++) {
-    comments.push(COMMENTS[getRandomInteger(0, COMMENTS.length - 1)]);
-  }
+// const getComments = () => {
+//   const comments = [];
+//   for (let i = 0; i <= getRandomInteger(0, 30); i++) {
+//     comments.push(MESSAGE[getRandomInteger(0, MESSAGE.length - 1)]);
+//   }
+//   return comments;
+// };
 
-  return comments;
-};
+function getComments (quantity) {
+  const generatedId = getUniqueNumber(1, quantity);
+  const generatedAvatar = getUniqueNumber(1, 6);
+
+  const comment = () => ({
+    id: generatedId(),
+    avatar: `img/avatar-${generatedAvatar()}.svg`,
+    message: MESSAGES[getRandomInteger(0, DESCRIPTIONS.length - 1)],
+    name: NAMES[getRandomInteger(0, DESCRIPTIONS.length - 1)],
+  });
+  
+  return Array.from({length: quantity}, comment);
+}
 
 function getPictures(quantity) {
   const generatedId = getUniqueNumber(1, quantity);
   const generatedUrl = getUniqueNumber(1, quantity);
 
-  const object = () => ({
+  const card = () => ({
     id: generatedId(),
     url: `photos/${generatedUrl()}.jpg`,
     description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
     likes: getRandomInteger(1, 200),
-    comments: getComments(),
+    comments: getComments(6),
   });
 
-  return Array.from({length: quantity}, object);
+  return Array.from({length: quantity}, card);
 }
 
 export {getPictures};
