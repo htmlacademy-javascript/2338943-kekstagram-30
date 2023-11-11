@@ -78,11 +78,10 @@ const NAMES = [
 
 function getComments (quantity) {
   const generatedId = getUniqueNumber(1, quantity);
-  const generatedAvatar = getUniqueNumber(1, 6);
 
   const comment = () => ({
     id: generatedId(),
-    avatar: `img/avatar-${generatedAvatar()}.svg`,
+    avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
     message: MESSAGES[getRandomInteger(0, DESCRIPTIONS.length - 1)],
     name: NAMES[getRandomInteger(0, DESCRIPTIONS.length - 1)],
   });
@@ -99,7 +98,7 @@ function getPictures(quantity) {
     url: `photos/${generatedUrl()}.jpg`,
     description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
     likes: getRandomInteger(1, 200),
-    comments: getComments(6),
+    comments: getComments(getRandomInteger(6, 17)),
   });
 
   return Array.from({length: quantity}, card);
