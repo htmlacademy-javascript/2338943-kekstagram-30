@@ -7,9 +7,10 @@ const renderGallery = (pictures) => {
   containerMiniatures.addEventListener('click', (evt) => {
     const miniature = evt.target.closest('[data-miniature-id]');
     
-    if(!miniature) {
+    if (!miniature) {
       return;
     }
+    
     evt.preventDefault();
     
     const IdMiniature = +miniature.dataset.miniatureId;

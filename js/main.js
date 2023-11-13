@@ -4,5 +4,5 @@ import {renderGallery} from './gallery.js';
 const pictures = getPictures(25);
 renderGallery(pictures);
 
-export const QUANTITY_VISIBLE_COMMENTS = 5;
+export const VISIBLE_COMMENTS_QUANTITY = 5;
 

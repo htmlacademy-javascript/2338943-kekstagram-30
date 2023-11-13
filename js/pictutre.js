@@ -1,4 +1,4 @@
-import {QUANTITY_VISIBLE_COMMENTS} from './main.js';
+import {VISIBLE_COMMENTS_QUANTITY} from './main.js';
 
 const bigPicture = document.querySelector('.big-picture');
 const bodyElement = document.querySelector('body');
@@ -28,7 +28,7 @@ const createComment = ({avatar, message, name}) => {
 };
 
 const renderComments = () => {
-  quantityShownComments += QUANTITY_VISIBLE_COMMENTS;
+  quantityShownComments += VISIBLE_COMMENTS_QUANTITY;
 
   if (quantityShownComments >= comments.length) {
     loaderComments.classList.add('hidden');
