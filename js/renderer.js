@@ -1,5 +1,3 @@
-// import {showPicture} from './picture.js';
-
 const miniatureSample = document
   .querySelector('#picture')
   .content

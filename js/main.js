@@ -5,4 +5,3 @@ const pictures = getPictures(25);
 renderGallery(pictures);
 
 export const VISIBLE_COMMENTS_QUANTITY = 5;
-

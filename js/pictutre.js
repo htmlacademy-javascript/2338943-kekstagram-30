@@ -54,7 +54,7 @@ const renderComments = () => {
   counterTotalComments.textContent = comments.length;
 };
 
-const onClickLoaderComments = () => renderComments();
+const onLoaderCommentsClick = () => renderComments();
 
 const hidePicture = () => {
   bigPicture.classList.add('hidden');
@@ -94,6 +94,8 @@ const showPicture = (dataPicture) => {
 };
 
 buttonClosePicture.addEventListener('click', onCloseBigPictureButtonClick);
-loaderComments.addEventListener('click', onClickLoaderComments);
+loaderComments.addEventListener('click', onLoaderCommentsClick);
 
 export {showPicture};
+
+
