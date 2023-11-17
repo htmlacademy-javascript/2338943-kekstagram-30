@@ -30,7 +30,7 @@
       <section class="img-upload">
         <div class="img-upload__wrapper">
           <h2 class="img-upload__title  visually-hidden">Загрузка фотографии</h2>
-          <form class="img-upload__form" id="upload-select-image" autocomplete="off">
+          <form class="img-upload__form" id="upload-select-image" action="https://30.javascript.pages.academy/kekstagram" method="post" enctype="multipart/form-data" autocomplete="off">
 
             <!-- Изначальное состояние поля для загрузки изображения -->
             <fieldset class="img-upload__start">
@@ -118,7 +118,7 @@
                   <div class="img-upload__field-wrapper">
                     <input class="text__hashtags" name="hashtags" placeholder="#ХэшТег">
                   </div>
-                  <div class="img-upload__field-wrapper">
+                  <div class="img-upload__field-wrapper" data-pristine-maxlength-message="Максимум 140 символов">
                     <textarea class="text__description" name="description" placeholder="Ваш комментарий..."></textarea>
                   </div>
                 </fieldset>
@@ -244,7 +244,9 @@
       <section class="data-error">
         <h2 class="data-error__title">Не удалось загрузить данные</h2>
       </section>
-    </template>
+    </template>  
+  <script src="vendor/pristine/pristine.min.js"></script>
+  <script src="js/form.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>
