@@ -14,6 +14,7 @@ const textAreaDescription = formLoadingFile.querySelector('.text__description');
 const showForm = () => {
   imgUploadOverlay.classList.remove('hidden');
   body.classList.add('modal-open');
+  formLoadingFile.querySelector('.img-upload__effect-level').classList.add('hidden');
   // Поставить обработчик Escape
 };
 
@@ -37,7 +38,7 @@ buttonCancel.addEventListener('click', onButtonCloseHideForm);
 function renderLoadedPicture (evt) {
   evt.preventDefault();
   // console.log(buttonLoadFile.files[0].name);
-  formLoadingFile.querySelector('.img-upload__preview img').src = buttonLoadFile.value;
+  // formLoadingFile.querySelector('.img-upload__preview img').src = buttonLoadFile.value;
 }
 
 formLoadingFile.addEventListener('change', renderLoadedPicture, {once: true});
@@ -59,7 +60,7 @@ const validator = {
     const checkValidity = () => {
 
       if (arrayHashtags.length !== newArrayHashtags.length) {
-        fieldHashtags.dataset.messageError = `Нужен знак "#" перед "${arrayHashtags}"!`;
+        fieldHashtags.dataset.messageError = `Нужен знак "#" после пробела в "${valueField}"!`;
         isValid = false;
         return false;
       }
@@ -149,3 +150,135 @@ formLoadingFile.addEventListener('submit', (evt) => {
     formLoadingFile.submit();
   }
 });
+
+const sliderForm = formLoadingFile.querySelector('.effect-level__slider');
+const bigImgPreview = formLoadingFile.querySelector('.img-upload__preview img');
+const effectIcon = formLoadingFile.querySelector('.effects__list');
+
+function destroySlider (sliderElement) {
+  if (sliderElement.noUiSlider) {
+    sliderElement.noUiSlider.destroy();
+  }
+}
+
+const stylesSlider = {
+  chrome: {
+    range: {
+      min: 0,
+      max: 1,
+    },
+    start: 1,
+    step: 0.1,
+    connect: 'lower',
+  },
+  sepia: {
+    range: {
+      min: 0,
+      max: 1,
+    },
+    start: 1,
+    step: 0.1,
+    connect: 'lower',
+  },
+  marvin: {
+    range: {
+      min: 0,
+      max: 100,
+    },
+    start: 100,
+    step: 1,
+    connect: 'lower',
+  },
+  phobos: {
+    range: {
+      min: 0,
+      max: 3,
+    },
+    start: 3,
+    step: 0.1,
+    connect: 'lower',
+  },
+  heat: {
+    range: {
+      min: 1,
+      max: 3,
+    },
+    start: 3,
+    step: 0.1,
+    connect: 'lower',
+  },
+};
+
+effectIcon.addEventListener('click', (evt) => {
+  if (evt.target.closest('.effects__preview--none')) {
+    destroySlider(sliderForm);
+    bigImgPreview.style.filter = '';
+    formLoadingFile.querySelector('.img-upload__effect-level').classList.add('hidden');
+  }
+  if (evt.target.closest('.effects__preview--chrome')) {
+    destroySlider(sliderForm);
+    noUiSlider.create(sliderForm, stylesSlider.chrome);
+    sliderForm.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `grayscale(${sliderForm.noUiSlider.get()})`;
+    });
+    formLoadingFile.querySelector('.img-upload__effect-level').classList.remove('hidden');
+  }
+  if (evt.target.closest('.effects__preview--sepia')) {
+    destroySlider(sliderForm);
+    noUiSlider.create(sliderForm, stylesSlider.sepia);
+    sliderForm.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `sepia(${sliderForm.noUiSlider.get()})`;
+    });
+    formLoadingFile.querySelector('.img-upload__effect-level').classList.remove('hidden');
+  }
+  if (evt.target.closest('.effects__preview--marvin')) {
+    destroySlider(sliderForm);
+    noUiSlider.create(sliderForm, stylesSlider.marvin);
+    sliderForm.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `invert(${sliderForm.noUiSlider.get()}%)`;
+    });
+    formLoadingFile.querySelector('.img-upload__effect-level').classList.remove('hidden');
+  }
+  if (evt.target.closest('.effects__preview--phobos')) {
+    destroySlider(sliderForm);
+    noUiSlider.create(sliderForm, stylesSlider.phobos);
+    sliderForm.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `blur(${sliderForm.noUiSlider.get()}px)`;
+    });
+    formLoadingFile.querySelector('.img-upload__effect-level').classList.remove('hidden');
+  }
+  if (evt.target.closest('.effects__preview--heat')) {
+    destroySlider(sliderForm);
+    noUiSlider.create(sliderForm, stylesSlider.heat);
+    sliderForm.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `brightness(${sliderForm.noUiSlider.get()})`;
+    });
+    formLoadingFile.querySelector('.img-upload__effect-level').classList.remove('hidden');
+  }
+});
+
+const scaleInputs = formLoadingFile.querySelector('.img-upload__scale');
+const scaleValueElement = scaleInputs.querySelector('.scale__control--value');
+let scaleValue = 1;
+
+scaleValueElement.value = `${scaleValue * 100}%`;
+
+scaleInputs.addEventListener('click', (evt) => {
+  if (evt.target.closest('.scale__control--smaller')) {
+    if (scaleValue > 0.25) {
+      scaleValue -= 0.25;
+      bigImgPreview.style = `transform: scale(${scaleValue})`;
+    }
+    scaleValueElement.value = `${scaleValue * 100}%`;
+  }
+
+  if (evt.target.closest('.scale__control--bigger')) {
+    if (scaleValue < 1) {
+      scaleValue += 0.25;
+      // if ()
+      bigImgPreview.style = `transform: scale(${scaleValue})`;
+    }
+    scaleValueElement.value = `${scaleValue * 100}%`;
+  }
+});
+
