@@ -85,7 +85,7 @@ function getComments (quantity) {
     message: MESSAGES[getRandomInteger(0, DESCRIPTIONS.length - 1)],
     name: NAMES[getRandomInteger(0, DESCRIPTIONS.length - 1)],
   });
-  
+
   return Array.from({length: quantity}, comment);
 }
 
