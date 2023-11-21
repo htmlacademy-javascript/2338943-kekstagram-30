@@ -1,5 +1,4 @@
-import {VISIBLE_COMMENTS_QUANTITY} from './main.js';
-
+const VISIBLE_COMMENTS_QUANTITY = 5;
 const bigPicture = document.querySelector('.big-picture');
 const bodyElement = document.querySelector('body');
 const buttonClosePicture = document.querySelector('.big-picture__cancel');
