@@ -157,7 +157,6 @@ const validator = {
         if (REGEX_SYMBOLS.test(partTag) === false) {
           fieldHashtags.dataset.messageError = `Можно использовать только арабские цифры, буквы кириллицы и латиницы в имени тэга "${partTag}".`;
           isValid = false;
-          return;
         }
       });
     };
@@ -205,7 +204,7 @@ loadingFileForm.addEventListener('submit', (evt) => {
   if (fieldHashtags.value.length !== 0) {
     const isValid = pristineValidator.validate();
 
-    if (isValid === true) {
+    if (isValid) {
       loadingFileForm.submit();
     }
   } else {
