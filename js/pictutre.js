@@ -41,10 +41,6 @@ const renderComments = () => {
     const comment = createComment(comments[i]);
     htmlFragment.append(comment);
   }
-  // comments.forEach((item) => {
-  //   const comment = createComment(item);
-  //   htmlFragment.append(comment);
-  // });
 
   listComments.innerHTML = '';
   listComments.append(htmlFragment);
@@ -53,7 +49,9 @@ const renderComments = () => {
   counterTotalComments.textContent = comments.length;
 };
 
-const onLoaderCommentsClick = () => renderComments();
+const onLoaderCommentsClick = () => {
+  renderComments();
+};
 
 const hidePicture = () => {
   bigPicture.classList.add('hidden');

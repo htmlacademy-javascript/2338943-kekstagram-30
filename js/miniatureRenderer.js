@@ -17,17 +17,10 @@ const createMiniature = ({id, url, description, comments, likes}) => {
 
 const renderMiniature = (pictures, containerMiniatures) => {
   const miniatures = document.createDocumentFragment();
-
   pictures.forEach((picture) => {
     const miniature = createMiniature(picture);
-    // miniature.addEventListener('click', (evt) => {
-    //   evt.preventDefault();
-    //   showPicture(picture);
-    // });
     miniatures.append(miniature);
-
   });
-
   containerMiniatures.append(miniatures);
 };
 
