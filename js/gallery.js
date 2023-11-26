@@ -1,4 +1,4 @@
-import {renderMiniature} from './renderer.js';
+import {renderMiniature} from './miniatureRenderer.js';
 import {showPicture} from './pictutre.js';
 
 const containerMiniatures = document.querySelector('.pictures');
@@ -10,15 +10,14 @@ const renderGallery = (pictures) => {
     if (!miniature) {
       return;
     }
-
     evt.preventDefault();
 
     const IdMiniature = +miniature.dataset.miniatureId;
-    // const dataPicture = pictures.find(({id}) => id === IdMiniature);
     const dataPicture = pictures.find((picture) => {
       if (picture.id === IdMiniature) {
         return picture.id;
       }
+    // const dataPicture = pictures.find(({id}) => id === IdMiniature);
     });
 
     showPicture(dataPicture);
@@ -27,4 +26,30 @@ const renderGallery = (pictures) => {
   renderMiniature(pictures, containerMiniatures);
 };
 
-export {renderGallery};
+const showErrorGetingsData = () => {
+  document.querySelector('body').append(
+    document
+    .querySelector('#data-error')
+    .content
+    .querySelector('.data-error').cloneNode(true)
+  );
+
+  setTimeout(() => {
+    document.querySelector('.data-error').remove();
+  }, 5000);
+};
+
+// const sampleErrorMessage = document
+//   .querySelector('#data-error')
+//   .content
+//   .querySelector('.data-error');
+
+// const showErrorGetingsData = () => {
+//   const messageError = sampleErrorMessage.cloneNode(true);
+//   document.querySelector('body').append(messageError);
+//   setTimeout(() => {
+//     document.querySelector('.data-error').remove();
+//   }, 5000);
+// };
+
+export {renderGallery, showErrorGetingsData};

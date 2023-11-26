@@ -74,8 +74,17 @@ const showForm = () => {
   body.classList.add('modal-open');
   loadingFileForm.querySelector('.img-upload__effect-level').classList.add('hidden');
 
-  noUiSlider.create(sliderForm, stylesSlider.chrome);
-  // Поставить обработчик Escape
+  noUiSlider.create(sliderForm, stylesSlider.default);
+
+  document.addEventListener(
+    'keydown',
+    (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        imgUploadOverlay.classList.add('hidden');
+      }
+    }
+  );
 };
 
 const onButtonShowForm = () => {
@@ -198,20 +207,6 @@ pristineValidator.addValidator(
   getMessageErrorHashtags,
   true);
 
-loadingFileForm.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-
-  if (fieldHashtags.value.length !== 0) {
-    const isValid = pristineValidator.validate();
-
-    if (isValid) {
-      loadingFileForm.submit();
-    }
-  } else {
-    loadingFileForm.submit();
-  }
-});
-
 const bigImgPreview = loadingFileForm.querySelector('.img-upload__preview img');
 const effectIcon = loadingFileForm.querySelector('.effects__list');
 
@@ -291,10 +286,108 @@ scaleInputs.addEventListener('click', (evt) => {
   if (evt.target.closest('.scale__control--bigger')) {
     if (scaleValue < 1) {
       scaleValue += 0.25;
-      // if ()
       bigImgPreview.style = `transform: scale(${scaleValue})`;
     }
     scaleValueElement.value = `${scaleValue * 100}%`;
   }
 });
 
+const showSuccesMessage = () => {
+  const succesMessage = document
+  .querySelector('#success')
+  .content
+  .querySelector('.success').cloneNode(true);
+  document.querySelector('body').append(succesMessage);
+  // console.log('Успешный успех!');
+
+  document.addEventListener(
+    'keydown',
+    (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        succesMessage.remove();
+      }
+    },
+    {once: true}
+  );
+
+  function onNotSuccesMessageClick (evt) {
+    if (evt.target === succesMessage) {
+      succesMessage.remove();
+      document.removeEventListener('keydown', onNotSuccesMessageClick);
+    }
+  }
+
+  succesMessage.addEventListener('click', onNotSuccesMessageClick);
+  document.querySelector('.success__button').addEventListener(
+    'click',
+    () => {
+      succesMessage.remove();
+    },
+    {once: true}
+  );
+};
+
+const showErrorMessage = () => {
+  const errorMessage = document
+  .querySelector('#error')
+  .content
+  .querySelector('.error').cloneNode(true);
+  document.querySelector('body').append(errorMessage);
+  // console.log('Неуспешный неуспех!');
+
+  document.addEventListener(
+    'keydown',
+    (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        errorMessage.remove();
+      }
+    },
+    {once: true}
+  );
+
+  function onNotErrorMessageClick (evt) {
+    if (evt.target === errorMessage) {
+      errorMessage.remove();
+      document.removeEventListener('keydown', onNotErrorMessageClick);
+    }
+  }
+
+  errorMessage.addEventListener('click', onNotErrorMessageClick);
+  document.querySelector('.error__button').addEventListener(
+    'click',
+    () => {
+      errorMessage.remove();
+    },
+    {once: true}
+  );
+};
+
+function setFormSubmit (onSucces, onError, evt) {
+  evt.preventDefault();
+  if (fieldHashtags.value.length !== 0 && !pristineValidator.validate()) {
+    // console.log('Не валидны данные!');
+    return;
+  }
+
+  fetch(
+    'https://30.javascript.pages.academy/kekstagram',
+    {
+      method: 'POST',
+      body: new FormData(evt.target),
+    }
+  )
+  .then(() => {
+    onSucces();
+    fieldHashtags.value = '';
+    textAreaDescription.value = '';
+  })
+  .catch(() => {
+    onError();
+  });
+}
+
+loadingFileForm.addEventListener('submit', (evt) => {
+  setFormSubmit(showSuccesMessage, showErrorMessage, evt);
+});
