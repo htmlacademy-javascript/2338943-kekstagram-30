@@ -31,7 +31,7 @@ const cleareGallery = () => {
     });
 };
 
-const picturesChecking = (a, b) => {
+const sortingSettings = (a, b) => {
   if (a.comments > b.comments) {
     return -1;
   }
@@ -50,17 +50,4 @@ function debounce (callback, timeoutDelay = 500) {
   };
 }
 
-function throttle (callback, delayBetweenFrames) {
-  let lastTime = 0;
-
-  return (...rest) => {
-    const now = new Date();
-
-    if (now - lastTime >= delayBetweenFrames) {
-      callback.apply(this, rest);
-      lastTime = now;
-    }
-  };
-}
-
-export {getUniqueNumber, cleareGallery, picturesChecking, debounce};
+export {getUniqueNumber, cleareGallery, sortingSettings, debounce};

@@ -5,13 +5,13 @@ const REGEX_SYMBOLS = /^[a-zа-яё0-9]{1,20}$/i;
 
 const body = document.querySelector('body');
 const loadingFileForm = document.querySelector('.img-upload__form');
-const buttonLoadFile = loadingFileForm.querySelector('.img-upload__input');
-const imgUploadOverlay = loadingFileForm.querySelector('.img-upload__overlay');
-const buttonCancel = loadingFileForm.querySelector('.img-upload__cancel');
-const fieldHashtags = loadingFileForm.querySelector('.text__hashtags');
-const textAreaDescription = loadingFileForm.querySelector('.text__description');
+const loadFileButton = loadingFileForm.querySelector('.img-upload__input');
+const uploadOverlayElement = loadingFileForm.querySelector('.img-upload__overlay');
+const cancelButton = loadingFileForm.querySelector('.img-upload__cancel');
+const hashtagsFieldElement = loadingFileForm.querySelector('.text__hashtags');
+const descriptionElement = loadingFileForm.querySelector('.text__description');
 const submitButton = document.querySelector('#upload-submit');
-const sliderForm = loadingFileForm.querySelector('.effect-level__slider');
+const formSliderElement = loadingFileForm.querySelector('.effect-level__slider');
 const stylesSlider = {
   default: {
     range: {
@@ -69,16 +69,11 @@ const stylesSlider = {
   },
 };
 
-const closeForm = () => {
-  imgUploadOverlay.classList.add('hidden');
-  body.classList.remove('modal-open');
-  destroySlider(sliderForm);
-
-  fieldHashtags.value = '';
-  textAreaDescription.value = '';
-  document.removeEventListener('keydown', onDocumentKeydown);
+const destroySlider = (sliderElement) => {
+  if (sliderElement.noUiSlider) {
+    sliderElement.noUiSlider.destroy();
+  }
 };
-
 const onDocumentKeydown = (evt) => {
   if (evt.key === 'Escape') {
     evt.preventDefault();
@@ -87,13 +82,23 @@ const onDocumentKeydown = (evt) => {
 };
 
 const showForm = () => {
-  imgUploadOverlay.classList.remove('hidden');
+  uploadOverlayElement.classList.remove('hidden');
   body.classList.add('modal-open');
   loadingFileForm.querySelector('.img-upload__effect-level').classList.add('hidden');
 
-  noUiSlider.create(sliderForm, stylesSlider.default);
+  noUiSlider.create(formSliderElement, stylesSlider.default);
 
   document.addEventListener('keydown', onDocumentKeydown, {once: true});
+};
+
+const closeForm = () => {
+  uploadOverlayElement.classList.add('hidden');
+  body.classList.remove('modal-open');
+  destroySlider(formSliderElement);
+
+  hashtagsFieldElement.value = '';
+  descriptionElement.value = '';
+  document.removeEventListener('keydown', onDocumentKeydown);
 };
 
 const onButtonShowForm = () => {
@@ -104,8 +109,8 @@ const onButtonCloseHideForm = () => {
   closeForm();
 };
 
-buttonCancel.addEventListener('click', onButtonCloseHideForm);
-buttonLoadFile.addEventListener('click', onButtonShowForm);
+cancelButton.addEventListener('click', onButtonCloseHideForm);
+loadFileButton.addEventListener('change', onButtonShowForm);
 submitButton.removeEventListener('click', onDocumentKeydown);
 
 const pristineValidator = new Pristine(loadingFileForm, {
@@ -125,19 +130,19 @@ const validator = {
     const checkValidity = () => {
 
       if (arrayHashtags.length !== newArrayHashtags.length) {
-        fieldHashtags.dataset.messageError = `Нужен знак "#" после пробела в "${valueField}"!`;
+        hashtagsFieldElement.dataset.messageError = `Нужен знак "#" после пробела в "${valueField}"!`;
         isValid = false;
         return;
       }
 
       if (arrayHashtags.length !== collectionHashtags.size) {
-        fieldHashtags.dataset.messageError = `В "${arrayHashtags}" нельзя повторять тэги!`;
+        hashtagsFieldElement.dataset.messageError = `В "${arrayHashtags}" нельзя повторять тэги!`;
         isValid = false;
         return;
       }
 
       if (arrayHashtags.length > 5) {
-        fieldHashtags.dataset.messageError = `Нельзя больше ${MAX_QUANTITY_TAGS} тэгов в "${arrayHashtags}"!`;
+        hashtagsFieldElement.dataset.messageError = `Нельзя больше ${MAX_QUANTITY_TAGS} тэгов в "${arrayHashtags}"!`;
         isValid = false;
         return;
       }
@@ -146,19 +151,19 @@ const validator = {
         const partTag = tag.slice(1);
 
         if (partTag.length === 0) {
-          fieldHashtags.dataset.messageError = 'Нужны хоть какие-то символы после "#"!';
+          hashtagsFieldElement.dataset.messageError = 'Нужны хоть какие-то символы после "#"!';
           isValid = false;
           return;
         }
 
         if (partTag.length > 20) {
-          fieldHashtags.dataset.messageError = `Нельзя больше ${MAX_QUANTITY_SYMBOLS_TAG} символов в тэге "${tag}"!`;
+          hashtagsFieldElement.dataset.messageError = `Нельзя больше ${MAX_QUANTITY_SYMBOLS_TAG} символов в тэге "${tag}"!`;
           isValid = false;
           return;
         }
 
         if (REGEX_SYMBOLS.test(partTag) === false) {
-          fieldHashtags.dataset.messageError = `Можно использовать только арабские цифры, буквы кириллицы и латиницы в имени тэга "${partTag}".`;
+          hashtagsFieldElement.dataset.messageError = `Можно использовать только арабские цифры, буквы кириллицы и латиницы в имени тэга "${partTag}".`;
           isValid = false;
         }
       });
@@ -172,31 +177,31 @@ const validator = {
     if (valueField.length <= MAX_LENGTH_DESCRIPTION) {
       return true;
     } else {
-      textAreaDescription.dataset.messageError = `Не больше ${MAX_LENGTH_DESCRIPTION} символов в описании!`;
+      descriptionElement.dataset.messageError = `Не больше ${MAX_LENGTH_DESCRIPTION} символов в описании!`;
       return false;
     }
   },
 };
 
 const getMessageErrorDescription = () => {
-  const message = textAreaDescription.dataset.messageError;
+  const message = descriptionElement.dataset.messageError;
   return message;
 };
 
 pristineValidator.addValidator(
-  textAreaDescription,
+  descriptionElement,
   validator.isLengthDescriptionAcceptable,
   getMessageErrorDescription,
   true
 );
 
 const getMessageErrorHashtags = () => {
-  const message = fieldHashtags.dataset.messageError;
+  const message = hashtagsFieldElement.dataset.messageError;
   return message;
 };
 
 pristineValidator.addValidator(
-  fieldHashtags,
+  hashtagsFieldElement,
   validator.isHashtagsValid,
   getMessageErrorHashtags,
   true);
@@ -204,16 +209,10 @@ pristineValidator.addValidator(
 const bigImgPreview = loadingFileForm.querySelector('.img-upload__preview img');
 const effectIcon = loadingFileForm.querySelector('.effects__list');
 
-const destroySlider = (sliderElement) => {
-  if (sliderElement.noUiSlider) {
-    sliderElement.noUiSlider.destroy();
-  }
-};
-
 const onClickIconEffect = (evt) => {
-  sliderForm.noUiSlider.updateOptions(stylesSlider.default);
+  formSliderElement.noUiSlider.updateOptions(stylesSlider.default);
 
-  if (evt.target.id === null) {
+  if (!evt.target.id) {
     return;
   }
   if (evt.target.id === 'effect-none') {
@@ -222,41 +221,41 @@ const onClickIconEffect = (evt) => {
     return;
   }
   if (evt.target.id === 'effect-chrome') {
-    sliderForm.noUiSlider.updateOptions(stylesSlider.chrome);
-    sliderForm.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `grayscale(${sliderForm.noUiSlider.get()})`;
+    formSliderElement.noUiSlider.updateOptions(stylesSlider.chrome);
+    formSliderElement.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `grayscale(${formSliderElement.noUiSlider.get()})`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
   }
   if (evt.target.id === 'effect-sepia') {
-    sliderForm.noUiSlider.updateOptions(stylesSlider.sepia);
-    sliderForm.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `sepia(${sliderForm.noUiSlider.get()})`;
+    formSliderElement.noUiSlider.updateOptions(stylesSlider.sepia);
+    formSliderElement.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `sepia(${formSliderElement.noUiSlider.get()})`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
   }
   if (evt.target.id === 'effect-marvin') {
-    sliderForm.noUiSlider.updateOptions(stylesSlider.marvin);
-    sliderForm.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `invert(${sliderForm.noUiSlider.get()}%)`;
+    formSliderElement.noUiSlider.updateOptions(stylesSlider.marvin);
+    formSliderElement.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `invert(${formSliderElement.noUiSlider.get()}%)`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
   }
   if (evt.target.id === 'effect-phobos') {
-    sliderForm.noUiSlider.updateOptions(stylesSlider.phobos);
-    sliderForm.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `blur(${sliderForm.noUiSlider.get()}px)`;
+    formSliderElement.noUiSlider.updateOptions(stylesSlider.phobos);
+    formSliderElement.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `blur(${formSliderElement.noUiSlider.get()}px)`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
   }
   if (evt.target.id === 'effect-heat') {
-    sliderForm.noUiSlider.updateOptions(stylesSlider.heat);
-    sliderForm.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `brightness(${sliderForm.noUiSlider.get()})`;
+    formSliderElement.noUiSlider.updateOptions(stylesSlider.heat);
+    formSliderElement.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `brightness(${formSliderElement.noUiSlider.get()})`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
   }
@@ -303,6 +302,13 @@ const unblockSubmitButton = () => {
 
 };
 
+const onSuccesMessageKeydown = (evt) => {
+  if (evt.key === 'Escape') {
+    evt.preventDefault();
+    document.querySelector('.success').remove();
+  }
+};
+
 const showSuccesMessage = () => {
   const succesMessage = document
     .querySelector('#success')
@@ -310,20 +316,13 @@ const showSuccesMessage = () => {
     .querySelector('.success').cloneNode(true);
 
   document.querySelector('body').append(succesMessage);
-  document.addEventListener(
-    'keydown',
-    (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        succesMessage.remove();
-      }
-    },
-    {once: true}
+  document.addEventListener('keydown',onSuccesMessageKeydown, {once: true}
   );
   succesMessage.addEventListener('click', onNotSuccesMessageClick);
   document.querySelector('.success__button').addEventListener(
     'click',
     () => {
+      document.removeEventListener('keydown', onSuccesMessageKeydown, {once: true});
       succesMessage.remove();
     },
     {once: true}
@@ -376,54 +375,13 @@ const showErrorMessage = () => {
   );
 };
 
-// const showResultMessage = (sampleClass, sampleId) => {
-//   unblockSubmitButton();
-
-//   function onMessageKeydown (evt) {
-//     if (evt.key === 'Escape') {
-//       evt.preventDefault();
-//       document.querySelector(sampleClass).remove();
-//       document.removeEventListener('keydown', onMessageKeydown, {once: true});
-//       document.addEventListener('keydown', onDocumentKeydown, {once: true});
-//     }
-//   }
-//   function onNotMessageClick (evt) {
-//     if (evt.target === document.querySelector(sampleClass)) {
-//       document.querySelector(sampleClass).remove();
-//       document.removeEventListener('keydown', onMessageKeydown, {once: true});
-//       document.addEventListener('keydown', onDocumentKeydown, {once: true});
-//     }
-//   }
-
-//   const okButton = document.querySelector(`${sampleClass}__button`);
-//   const message = document.querySelector(sampleId).content.querySelector(sampleClass).cloneNode(true);
-
-//   document.querySelector('body').append(message);
-//   console.log(message);
-
-//   document.removeEventListener('keydown', onDocumentKeydown);
-
-//   document.addEventListener('keydown', onMessageKeydown, {once: true}
-//   );
-//   message.addEventListener('click', onNotMessageClick);
-//   okButton.addEventListener(
-//     'click',
-//     () => {
-//       document.querySelector(sampleClass).remove();
-//       document.removeEventListener('keydown', onMessageKeydown, {once: true});
-//       document.addEventListener('keydown', onDocumentKeydown, {once: true});
-//     } ,
-//     {once: true}
-//   );
-// };
-
 const onButtonSubmitClick = (onSucces, onError, evt) => {
   evt.preventDefault();
 
-  if (fieldHashtags.value.length !== 0 && !pristineValidator.validate(fieldHashtags)) {
+  if (hashtagsFieldElement.value.length !== 0 && !pristineValidator.validate(hashtagsFieldElement)) {
     return;
   }
-  if (textAreaDescription.value.length !== 0 && !pristineValidator.validate(textAreaDescription)) {
+  if (descriptionElement.value.length !== 0 && !pristineValidator.validate(descriptionElement)) {
     return;
   }
 
@@ -448,10 +406,3 @@ const onButtonSubmitClick = (onSucces, onError, evt) => {
 loadingFileForm.addEventListener('submit', (evt) => {
   onButtonSubmitClick(showSuccesMessage, showErrorMessage, evt);
 });
-
-// loadingFileForm.addEventListener('submit', (evt) => {
-//   onButtonSubmitClick(
-//     () => showResultMessage('.succes', '#succes'),
-//     () => console.log('ошибка'),
-//     evt);
-// });
