@@ -2,6 +2,7 @@ const MAX_LENGTH_DESCRIPTION = 140;
 const MAX_QUANTITY_TAGS = 5;
 const MAX_QUANTITY_SYMBOLS_TAG = 20;
 const REGEX_SYMBOLS = /^[a-zа-яё0-9]{1,20}$/i;
+const TYPES_IMAGE = ['gif', 'jpg', 'jpeg', 'png'];
 
 const body = document.querySelector('body');
 const loadingFileForm = document.querySelector('.img-upload__form');
@@ -206,7 +207,22 @@ pristineValidator.addValidator(
   getMessageErrorHashtags,
   true);
 
+
+const fileChooser = loadingFileForm.querySelector('#upload-file');
 const bigImgPreview = loadingFileForm.querySelector('.img-upload__preview img');
+
+fileChooser.addEventListener('change', () => {
+  const file = fileChooser.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = TYPES_IMAGE.some((it) => fileName.endsWith(it)
+  );
+
+  if (matches) {
+    bigImgPreview.src = URL.createObjectURL(file);
+  }
+});
+
 const effectIcon = loadingFileForm.querySelector('.effects__list');
 
 const onClickIconEffect = (evt) => {
