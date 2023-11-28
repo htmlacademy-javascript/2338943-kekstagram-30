@@ -10,7 +10,7 @@ const imgUploadOverlay = loadingFileForm.querySelector('.img-upload__overlay');
 const buttonCancel = loadingFileForm.querySelector('.img-upload__cancel');
 const fieldHashtags = loadingFileForm.querySelector('.text__hashtags');
 const textAreaDescription = loadingFileForm.querySelector('.text__description');
-
+const submitButton = document.querySelector('#upload-submit');
 const sliderForm = loadingFileForm.querySelector('.effect-level__slider');
 const stylesSlider = {
   default: {
@@ -69,6 +69,23 @@ const stylesSlider = {
   },
 };
 
+const closeForm = () => {
+  imgUploadOverlay.classList.add('hidden');
+  body.classList.remove('modal-open');
+  destroySlider(sliderForm);
+
+  fieldHashtags.value = '';
+  textAreaDescription.value = '';
+  document.removeEventListener('keydown', onDocumentKeydown);
+};
+
+const onDocumentKeydown = (evt) => {
+  if (evt.key === 'Escape') {
+    evt.preventDefault();
+    closeForm();
+  }
+};
+
 const showForm = () => {
   imgUploadOverlay.classList.remove('hidden');
   body.classList.add('modal-open');
@@ -76,43 +93,20 @@ const showForm = () => {
 
   noUiSlider.create(sliderForm, stylesSlider.default);
 
-  document.addEventListener(
-    'keydown',
-    (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        imgUploadOverlay.classList.add('hidden');
-      }
-    }
-  );
+  document.addEventListener('keydown', onDocumentKeydown, {once: true});
 };
 
 const onButtonShowForm = () => {
   showForm();
 };
 
-const closeForm = () => {
-  imgUploadOverlay.classList.add('hidden');
-  body.classList.remove('modal-open');
-  loadingFileForm.addEventListener('change', renderLoadedPicture, {once: true});
-
-  destroySlider(sliderForm);
-};
-
 const onButtonCloseHideForm = () => {
   closeForm();
 };
 
-buttonLoadFile.addEventListener('click', onButtonShowForm);
 buttonCancel.addEventListener('click', onButtonCloseHideForm);
-
-function renderLoadedPicture (evt) {
-  evt.preventDefault();
-  // console.log(buttonLoadFile.files[0].name);
-  // loadingFileForm.querySelector('.img-upload__preview img').src = buttonLoadFile.value;
-}
-
-loadingFileForm.addEventListener('change', renderLoadedPicture, {once: true});
+buttonLoadFile.addEventListener('click', onButtonShowForm);
+submitButton.removeEventListener('click', onDocumentKeydown);
 
 const pristineValidator = new Pristine(loadingFileForm, {
   classTo: 'img-upload__field-wrapper',
@@ -122,7 +116,7 @@ const pristineValidator = new Pristine(loadingFileForm, {
 });
 
 const validator = {
-  isHashtagsValid: function (valueField) {
+  isHashtagsValid: (valueField) => {
     const arrayHashtags = valueField.trim().toLowerCase().split(/\s/);
     const newArrayHashtags = arrayHashtags.filter((tag) => tag.startsWith('#'));
     const collectionHashtags = new Set(newArrayHashtags);
@@ -174,7 +168,7 @@ const validator = {
     return isValid;
   },
 
-  isLengthDescriptionAcceptable: function (valueField) {
+  isLengthDescriptionAcceptable: (valueField) => {
     if (valueField.length <= MAX_LENGTH_DESCRIPTION) {
       return true;
     } else {
@@ -184,10 +178,10 @@ const validator = {
   },
 };
 
-function getMessageErrorDescription () {
+const getMessageErrorDescription = () => {
   const message = textAreaDescription.dataset.messageError;
   return message;
-}
+};
 
 pristineValidator.addValidator(
   textAreaDescription,
@@ -196,10 +190,10 @@ pristineValidator.addValidator(
   true
 );
 
-function getMessageErrorHashtags () {
+const getMessageErrorHashtags = () => {
   const message = fieldHashtags.dataset.messageError;
   return message;
-}
+};
 
 pristineValidator.addValidator(
   fieldHashtags,
@@ -210,15 +204,18 @@ pristineValidator.addValidator(
 const bigImgPreview = loadingFileForm.querySelector('.img-upload__preview img');
 const effectIcon = loadingFileForm.querySelector('.effects__list');
 
-function destroySlider (sliderElement) {
+const destroySlider = (sliderElement) => {
   if (sliderElement.noUiSlider) {
     sliderElement.noUiSlider.destroy();
   }
-}
+};
 
-function onClickIconEffect (evt) {
+const onClickIconEffect = (evt) => {
   sliderForm.noUiSlider.updateOptions(stylesSlider.default);
 
+  if (evt.target.id === null) {
+    return;
+  }
   if (evt.target.id === 'effect-none') {
     bigImgPreview.style.filter = '';
     loadingFileForm.querySelector('.img-upload__effect-level').classList.add('hidden');
@@ -263,7 +260,7 @@ function onClickIconEffect (evt) {
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
   }
-}
+};
 
 effectIcon.addEventListener('click', onClickIconEffect);
 
@@ -292,14 +289,27 @@ scaleInputs.addEventListener('click', (evt) => {
   }
 });
 
+const onNotSuccesMessageClick = (evt) => {
+  if (evt.target === document.querySelector('.success')) {
+    document.querySelector('.success').remove();
+    closeForm();
+    document.removeEventListener('keydown', onNotSuccesMessageClick);
+  }
+};
+
+const unblockSubmitButton = () => {
+  submitButton.disabled = false;
+  submitButton.textContent = 'Опубликовать';
+
+};
+
 const showSuccesMessage = () => {
   const succesMessage = document
-  .querySelector('#success')
-  .content
-  .querySelector('.success').cloneNode(true);
-  document.querySelector('body').append(succesMessage);
-  // console.log('Успешный успех!');
+    .querySelector('#success')
+    .content
+    .querySelector('.success').cloneNode(true);
 
+  document.querySelector('body').append(succesMessage);
   document.addEventListener(
     'keydown',
     (evt) => {
@@ -310,14 +320,6 @@ const showSuccesMessage = () => {
     },
     {once: true}
   );
-
-  function onNotSuccesMessageClick (evt) {
-    if (evt.target === succesMessage) {
-      succesMessage.remove();
-      document.removeEventListener('keydown', onNotSuccesMessageClick);
-    }
-  }
-
   succesMessage.addEventListener('click', onNotSuccesMessageClick);
   document.querySelector('.success__button').addEventListener(
     'click',
@@ -326,50 +328,107 @@ const showSuccesMessage = () => {
     },
     {once: true}
   );
+  unblockSubmitButton();
+  closeForm();
+};
+
+const onErrorMessageKeydown = (evt) => {
+  if (evt.key === 'Escape') {
+    evt.preventDefault();
+    document.querySelector('.error').remove();
+    document.removeEventListener('keydown', onErrorMessageKeydown, {once: true});
+    document.addEventListener('keydown', onDocumentKeydown, {once: true});
+  }
+};
+
+const onNotErrorMessageClick = (evt) => {
+  if (evt.target === document.querySelector('.error')) {
+    document.querySelector('.error').remove();
+    document.removeEventListener('keydown', onErrorMessageKeydown, {once: true});
+    document.addEventListener('keydown', onDocumentKeydown, {once: true});
+  }
 };
 
 const showErrorMessage = () => {
-  const errorMessage = document
-  .querySelector('#error')
-  .content
-  .querySelector('.error').cloneNode(true);
-  document.querySelector('body').append(errorMessage);
-  // console.log('Неуспешный неуспех!');
+  unblockSubmitButton();
 
-  document.addEventListener(
-    'keydown',
-    (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        errorMessage.remove();
-      }
-    },
-    {once: true}
+  const errorMessage = document
+    .querySelector('#error')
+    .content
+    .querySelector('.error').cloneNode(true);
+  document.querySelector('body').append(errorMessage);
+
+  document.removeEventListener('keydown', onDocumentKeydown);
+  document.addEventListener('keydown', onErrorMessageKeydown, {once: true}
   );
 
-  function onNotErrorMessageClick (evt) {
-    if (evt.target === errorMessage) {
-      errorMessage.remove();
-      document.removeEventListener('keydown', onNotErrorMessageClick);
-    }
-  }
-
   errorMessage.addEventListener('click', onNotErrorMessageClick);
-  document.querySelector('.error__button').addEventListener(
+
+  const errorButton = document.querySelector('.error__button');
+  errorButton.addEventListener(
     'click',
     () => {
-      errorMessage.remove();
-    },
+      document.querySelector('.error').remove();
+      document.removeEventListener('keydown', onErrorMessageKeydown, {once: true});
+      document.addEventListener('keydown', onDocumentKeydown, {once: true});
+    } ,
     {once: true}
   );
 };
 
-function setFormSubmit (onSucces, onError, evt) {
+// const showResultMessage = (sampleClass, sampleId) => {
+//   unblockSubmitButton();
+
+//   function onMessageKeydown (evt) {
+//     if (evt.key === 'Escape') {
+//       evt.preventDefault();
+//       document.querySelector(sampleClass).remove();
+//       document.removeEventListener('keydown', onMessageKeydown, {once: true});
+//       document.addEventListener('keydown', onDocumentKeydown, {once: true});
+//     }
+//   }
+//   function onNotMessageClick (evt) {
+//     if (evt.target === document.querySelector(sampleClass)) {
+//       document.querySelector(sampleClass).remove();
+//       document.removeEventListener('keydown', onMessageKeydown, {once: true});
+//       document.addEventListener('keydown', onDocumentKeydown, {once: true});
+//     }
+//   }
+
+//   const okButton = document.querySelector(`${sampleClass}__button`);
+//   const message = document.querySelector(sampleId).content.querySelector(sampleClass).cloneNode(true);
+
+//   document.querySelector('body').append(message);
+//   console.log(message);
+
+//   document.removeEventListener('keydown', onDocumentKeydown);
+
+//   document.addEventListener('keydown', onMessageKeydown, {once: true}
+//   );
+//   message.addEventListener('click', onNotMessageClick);
+//   okButton.addEventListener(
+//     'click',
+//     () => {
+//       document.querySelector(sampleClass).remove();
+//       document.removeEventListener('keydown', onMessageKeydown, {once: true});
+//       document.addEventListener('keydown', onDocumentKeydown, {once: true});
+//     } ,
+//     {once: true}
+//   );
+// };
+
+const onButtonSubmitClick = (onSucces, onError, evt) => {
   evt.preventDefault();
-  if (fieldHashtags.value.length !== 0 && !pristineValidator.validate()) {
-    // console.log('Не валидны данные!');
+
+  if (fieldHashtags.value.length !== 0 && !pristineValidator.validate(fieldHashtags)) {
     return;
   }
+  if (textAreaDescription.value.length !== 0 && !pristineValidator.validate(textAreaDescription)) {
+    return;
+  }
+
+  submitButton.disabled = true;
+  submitButton.textContent = 'Отправляю...';
 
   fetch(
     'https://30.javascript.pages.academy/kekstagram',
@@ -378,16 +437,21 @@ function setFormSubmit (onSucces, onError, evt) {
       body: new FormData(evt.target),
     }
   )
-  .then(() => {
-    onSucces();
-    fieldHashtags.value = '';
-    textAreaDescription.value = '';
-  })
-  .catch(() => {
-    onError();
-  });
-}
+    .then(() => {
+      onSucces();
+    })
+    .catch(() => {
+      onError();
+    });
+};
 
 loadingFileForm.addEventListener('submit', (evt) => {
-  setFormSubmit(showSuccesMessage, showErrorMessage, evt);
+  onButtonSubmitClick(showSuccesMessage, showErrorMessage, evt);
 });
+
+// loadingFileForm.addEventListener('submit', (evt) => {
+//   onButtonSubmitClick(
+//     () => showResultMessage('.succes', '#succes'),
+//     () => console.log('ошибка'),
+//     evt);
+// });
