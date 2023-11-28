@@ -27,7 +27,7 @@ const renderGallery = (pictures) => {
     showPicture(dataPicture);
   });
 
-  const filters = document.querySelector('.img-filters');
+  const filtersElement = document.querySelector('.img-filters');
   const filterButtons = document.querySelectorAll('.img-filters__button');
   const defaultFilterButton = document.querySelector('#filter-default');
   const randomFilterButton = document.querySelector('#filter-random');
@@ -45,7 +45,7 @@ const renderGallery = (pictures) => {
     });
   };
 
-  filters.classList.remove('img-filters--inactive');
+  filtersElement.classList.remove('img-filters--inactive');
 
   renderMiniature(pictures, containerMiniatures);
 

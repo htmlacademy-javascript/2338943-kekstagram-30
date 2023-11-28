@@ -208,18 +208,18 @@ pristineValidator.addValidator(
   true);
 
 
-const fileChooser = loadingFileForm.querySelector('#upload-file');
-const bigImgPreview = loadingFileForm.querySelector('.img-upload__preview img');
+const fileChooserElement = loadingFileForm.querySelector('#upload-file');
+const bigImgPreviewElement = loadingFileForm.querySelector('.img-upload__preview img');
 
-fileChooser.addEventListener('change', () => {
-  const file = fileChooser.files[0];
+fileChooserElement.addEventListener('change', () => {
+  const file = fileChooserElement.files[0];
   const fileName = file.name.toLowerCase();
 
   const matches = TYPES_IMAGE.some((it) => fileName.endsWith(it)
   );
 
   if (matches) {
-    bigImgPreview.src = URL.createObjectURL(file);
+    bigImgPreviewElement.src = URL.createObjectURL(file);
   }
 });
 
@@ -232,14 +232,14 @@ const onClickIconEffect = (evt) => {
     return;
   }
   if (evt.target.id === 'effect-none') {
-    bigImgPreview.style.filter = '';
+    bigImgPreviewElement.style.filter = '';
     loadingFileForm.querySelector('.img-upload__effect-level').classList.add('hidden');
     return;
   }
   if (evt.target.id === 'effect-chrome') {
     formSliderElement.noUiSlider.updateOptions(stylesSlider.chrome);
     formSliderElement.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `grayscale(${formSliderElement.noUiSlider.get()})`;
+      bigImgPreviewElement.style.filter = `grayscale(${formSliderElement.noUiSlider.get()})`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
@@ -247,7 +247,7 @@ const onClickIconEffect = (evt) => {
   if (evt.target.id === 'effect-sepia') {
     formSliderElement.noUiSlider.updateOptions(stylesSlider.sepia);
     formSliderElement.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `sepia(${formSliderElement.noUiSlider.get()})`;
+      bigImgPreviewElement.style.filter = `sepia(${formSliderElement.noUiSlider.get()})`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
@@ -255,7 +255,7 @@ const onClickIconEffect = (evt) => {
   if (evt.target.id === 'effect-marvin') {
     formSliderElement.noUiSlider.updateOptions(stylesSlider.marvin);
     formSliderElement.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `invert(${formSliderElement.noUiSlider.get()}%)`;
+      bigImgPreviewElement.style.filter = `invert(${formSliderElement.noUiSlider.get()}%)`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
@@ -263,7 +263,7 @@ const onClickIconEffect = (evt) => {
   if (evt.target.id === 'effect-phobos') {
     formSliderElement.noUiSlider.updateOptions(stylesSlider.phobos);
     formSliderElement.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `blur(${formSliderElement.noUiSlider.get()}px)`;
+      bigImgPreviewElement.style.filter = `blur(${formSliderElement.noUiSlider.get()}px)`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
@@ -271,7 +271,7 @@ const onClickIconEffect = (evt) => {
   if (evt.target.id === 'effect-heat') {
     formSliderElement.noUiSlider.updateOptions(stylesSlider.heat);
     formSliderElement.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `brightness(${formSliderElement.noUiSlider.get()})`;
+      bigImgPreviewElement.style.filter = `brightness(${formSliderElement.noUiSlider.get()})`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
   }
@@ -289,7 +289,7 @@ scaleInputs.addEventListener('click', (evt) => {
   if (evt.target.closest('.scale__control--smaller')) {
     if (scaleValue > 0.25) {
       scaleValue -= 0.25;
-      bigImgPreview.style = `transform: scale(${scaleValue})`;
+      bigImgPreviewElement.style = `transform: scale(${scaleValue})`;
     }
     scaleValueElement.value = `${scaleValue * 100}%`;
     return;
@@ -298,7 +298,7 @@ scaleInputs.addEventListener('click', (evt) => {
   if (evt.target.closest('.scale__control--bigger')) {
     if (scaleValue < 1) {
       scaleValue += 0.25;
-      bigImgPreview.style = `transform: scale(${scaleValue})`;
+      bigImgPreviewElement.style = `transform: scale(${scaleValue})`;
     }
     scaleValueElement.value = `${scaleValue * 100}%`;
   }
