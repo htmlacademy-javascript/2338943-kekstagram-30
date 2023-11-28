@@ -7,24 +7,47 @@ const getRandomInteger = (min, max) => {
   return Math.floor(result);
 };
 
-const getUniqueNumber = (min, max) => {
-  const previousValues = [];
+const getUniqueNumber = (min, max, previousValues) => {
+  let currentValue = getRandomInteger(min, max);
 
-  return function () {
-    let currentValue = getRandomInteger(min, max);
+  if (previousValues.length >= (max - min + 1)) {
+    return null;
+  }
 
-    if (previousValues.length >= (max - min + 1)) {
-      return null;
-    }
+  while (previousValues.includes(currentValue)) {
+    currentValue = getRandomInteger(min, max);
+  }
 
-    while (previousValues.includes(currentValue)) {
-      currentValue = getRandomInteger(min, max);
-    }
-    
-    previousValues.push(currentValue);
+  previousValues.push(currentValue);
 
-    return currentValue;
-  };
+  return currentValue;
 };
 
-export {getRandomInteger, getUniqueNumber};
+const cleareGallery = () => {
+  document.querySelector('.pictures')
+    .querySelectorAll('.picture')
+    .forEach((picture) => {
+      picture.remove();
+    });
+};
+
+const sortingSettings = (a, b) => {
+  if (a.comments > b.comments) {
+    return -1;
+  }
+  if (a.comments < b.comments) {
+    return 1;
+  }
+  return 0;
+};
+
+function debounce (callback, timeoutDelay = 500) {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+
+export {getUniqueNumber, cleareGallery, sortingSettings, debounce};

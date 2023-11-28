@@ -1,3 +1,5 @@
+import {cleareGallery} from './util.js';
+
 const miniatureSample = document
   .querySelector('#picture')
   .content
@@ -15,13 +17,14 @@ const createMiniature = ({id, url, description, comments, likes}) => {
   return miniature;
 };
 
-const renderMiniature = (pictures, containerMiniatures) => {
+const renderMiniature = (elements, containerMiniatures) => {
+  cleareGallery();
   const miniatures = document.createDocumentFragment();
-  pictures.forEach((picture) => {
+  elements.forEach((picture) => {
     const miniature = createMiniature(picture);
     miniatures.append(miniature);
   });
   containerMiniatures.append(miniatures);
 };
 
-export {renderMiniature};
+export {renderMiniature, createMiniature};

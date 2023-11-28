@@ -5,13 +5,13 @@ const REGEX_SYMBOLS = /^[a-zа-яё0-9]{1,20}$/i;
 
 const body = document.querySelector('body');
 const loadingFileForm = document.querySelector('.img-upload__form');
-const buttonLoadFile = loadingFileForm.querySelector('.img-upload__input');
-const imgUploadOverlay = loadingFileForm.querySelector('.img-upload__overlay');
-const buttonCancel = loadingFileForm.querySelector('.img-upload__cancel');
-const fieldHashtags = loadingFileForm.querySelector('.text__hashtags');
-const textAreaDescription = loadingFileForm.querySelector('.text__description');
-
-const sliderForm = loadingFileForm.querySelector('.effect-level__slider');
+const loadFileButton = loadingFileForm.querySelector('.img-upload__input');
+const uploadOverlayElement = loadingFileForm.querySelector('.img-upload__overlay');
+const cancelButton = loadingFileForm.querySelector('.img-upload__cancel');
+const hashtagsFieldElement = loadingFileForm.querySelector('.text__hashtags');
+const descriptionElement = loadingFileForm.querySelector('.text__description');
+const submitButton = document.querySelector('#upload-submit');
+const formSliderElement = loadingFileForm.querySelector('.effect-level__slider');
 const stylesSlider = {
   default: {
     range: {
@@ -69,50 +69,49 @@ const stylesSlider = {
   },
 };
 
+const destroySlider = (sliderElement) => {
+  if (sliderElement.noUiSlider) {
+    sliderElement.noUiSlider.destroy();
+  }
+};
+const onDocumentKeydown = (evt) => {
+  if (evt.key === 'Escape') {
+    evt.preventDefault();
+    closeForm();
+  }
+};
+
 const showForm = () => {
-  imgUploadOverlay.classList.remove('hidden');
+  uploadOverlayElement.classList.remove('hidden');
   body.classList.add('modal-open');
   loadingFileForm.querySelector('.img-upload__effect-level').classList.add('hidden');
 
-  noUiSlider.create(sliderForm, stylesSlider.default);
+  noUiSlider.create(formSliderElement, stylesSlider.default);
 
-  document.addEventListener(
-    'keydown',
-    (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        imgUploadOverlay.classList.add('hidden');
-      }
-    }
-  );
+  document.addEventListener('keydown', onDocumentKeydown, {once: true});
+};
+
+const closeForm = () => {
+  uploadOverlayElement.classList.add('hidden');
+  body.classList.remove('modal-open');
+  destroySlider(formSliderElement);
+
+  hashtagsFieldElement.value = '';
+  descriptionElement.value = '';
+  document.removeEventListener('keydown', onDocumentKeydown);
 };
 
 const onButtonShowForm = () => {
   showForm();
 };
 
-const closeForm = () => {
-  imgUploadOverlay.classList.add('hidden');
-  body.classList.remove('modal-open');
-  loadingFileForm.addEventListener('change', renderLoadedPicture, {once: true});
-
-  destroySlider(sliderForm);
-};
-
 const onButtonCloseHideForm = () => {
   closeForm();
 };
 
-buttonLoadFile.addEventListener('click', onButtonShowForm);
-buttonCancel.addEventListener('click', onButtonCloseHideForm);
-
-function renderLoadedPicture (evt) {
-  evt.preventDefault();
-  // console.log(buttonLoadFile.files[0].name);
-  // loadingFileForm.querySelector('.img-upload__preview img').src = buttonLoadFile.value;
-}
-
-loadingFileForm.addEventListener('change', renderLoadedPicture, {once: true});
+cancelButton.addEventListener('click', onButtonCloseHideForm);
+loadFileButton.addEventListener('change', onButtonShowForm);
+submitButton.removeEventListener('click', onDocumentKeydown);
 
 const pristineValidator = new Pristine(loadingFileForm, {
   classTo: 'img-upload__field-wrapper',
@@ -122,7 +121,7 @@ const pristineValidator = new Pristine(loadingFileForm, {
 });
 
 const validator = {
-  isHashtagsValid: function (valueField) {
+  isHashtagsValid: (valueField) => {
     const arrayHashtags = valueField.trim().toLowerCase().split(/\s/);
     const newArrayHashtags = arrayHashtags.filter((tag) => tag.startsWith('#'));
     const collectionHashtags = new Set(newArrayHashtags);
@@ -131,19 +130,19 @@ const validator = {
     const checkValidity = () => {
 
       if (arrayHashtags.length !== newArrayHashtags.length) {
-        fieldHashtags.dataset.messageError = `Нужен знак "#" после пробела в "${valueField}"!`;
+        hashtagsFieldElement.dataset.messageError = `Нужен знак "#" после пробела в "${valueField}"!`;
         isValid = false;
         return;
       }
 
       if (arrayHashtags.length !== collectionHashtags.size) {
-        fieldHashtags.dataset.messageError = `В "${arrayHashtags}" нельзя повторять тэги!`;
+        hashtagsFieldElement.dataset.messageError = `В "${arrayHashtags}" нельзя повторять тэги!`;
         isValid = false;
         return;
       }
 
       if (arrayHashtags.length > 5) {
-        fieldHashtags.dataset.messageError = `Нельзя больше ${MAX_QUANTITY_TAGS} тэгов в "${arrayHashtags}"!`;
+        hashtagsFieldElement.dataset.messageError = `Нельзя больше ${MAX_QUANTITY_TAGS} тэгов в "${arrayHashtags}"!`;
         isValid = false;
         return;
       }
@@ -152,19 +151,19 @@ const validator = {
         const partTag = tag.slice(1);
 
         if (partTag.length === 0) {
-          fieldHashtags.dataset.messageError = 'Нужны хоть какие-то символы после "#"!';
+          hashtagsFieldElement.dataset.messageError = 'Нужны хоть какие-то символы после "#"!';
           isValid = false;
           return;
         }
 
         if (partTag.length > 20) {
-          fieldHashtags.dataset.messageError = `Нельзя больше ${MAX_QUANTITY_SYMBOLS_TAG} символов в тэге "${tag}"!`;
+          hashtagsFieldElement.dataset.messageError = `Нельзя больше ${MAX_QUANTITY_SYMBOLS_TAG} символов в тэге "${tag}"!`;
           isValid = false;
           return;
         }
 
         if (REGEX_SYMBOLS.test(partTag) === false) {
-          fieldHashtags.dataset.messageError = `Можно использовать только арабские цифры, буквы кириллицы и латиницы в имени тэга "${partTag}".`;
+          hashtagsFieldElement.dataset.messageError = `Можно использовать только арабские цифры, буквы кириллицы и латиницы в имени тэга "${partTag}".`;
           isValid = false;
         }
       });
@@ -174,35 +173,35 @@ const validator = {
     return isValid;
   },
 
-  isLengthDescriptionAcceptable: function (valueField) {
+  isLengthDescriptionAcceptable: (valueField) => {
     if (valueField.length <= MAX_LENGTH_DESCRIPTION) {
       return true;
     } else {
-      textAreaDescription.dataset.messageError = `Не больше ${MAX_LENGTH_DESCRIPTION} символов в описании!`;
+      descriptionElement.dataset.messageError = `Не больше ${MAX_LENGTH_DESCRIPTION} символов в описании!`;
       return false;
     }
   },
 };
 
-function getMessageErrorDescription () {
-  const message = textAreaDescription.dataset.messageError;
+const getMessageErrorDescription = () => {
+  const message = descriptionElement.dataset.messageError;
   return message;
-}
+};
 
 pristineValidator.addValidator(
-  textAreaDescription,
+  descriptionElement,
   validator.isLengthDescriptionAcceptable,
   getMessageErrorDescription,
   true
 );
 
-function getMessageErrorHashtags () {
-  const message = fieldHashtags.dataset.messageError;
+const getMessageErrorHashtags = () => {
+  const message = hashtagsFieldElement.dataset.messageError;
   return message;
-}
+};
 
 pristineValidator.addValidator(
-  fieldHashtags,
+  hashtagsFieldElement,
   validator.isHashtagsValid,
   getMessageErrorHashtags,
   true);
@@ -210,60 +209,57 @@ pristineValidator.addValidator(
 const bigImgPreview = loadingFileForm.querySelector('.img-upload__preview img');
 const effectIcon = loadingFileForm.querySelector('.effects__list');
 
-function destroySlider (sliderElement) {
-  if (sliderElement.noUiSlider) {
-    sliderElement.noUiSlider.destroy();
+const onClickIconEffect = (evt) => {
+  formSliderElement.noUiSlider.updateOptions(stylesSlider.default);
+
+  if (!evt.target.id) {
+    return;
   }
-}
-
-function onClickIconEffect (evt) {
-  sliderForm.noUiSlider.updateOptions(stylesSlider.default);
-
   if (evt.target.id === 'effect-none') {
     bigImgPreview.style.filter = '';
     loadingFileForm.querySelector('.img-upload__effect-level').classList.add('hidden');
     return;
   }
   if (evt.target.id === 'effect-chrome') {
-    sliderForm.noUiSlider.updateOptions(stylesSlider.chrome);
-    sliderForm.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `grayscale(${sliderForm.noUiSlider.get()})`;
+    formSliderElement.noUiSlider.updateOptions(stylesSlider.chrome);
+    formSliderElement.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `grayscale(${formSliderElement.noUiSlider.get()})`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
   }
   if (evt.target.id === 'effect-sepia') {
-    sliderForm.noUiSlider.updateOptions(stylesSlider.sepia);
-    sliderForm.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `sepia(${sliderForm.noUiSlider.get()})`;
+    formSliderElement.noUiSlider.updateOptions(stylesSlider.sepia);
+    formSliderElement.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `sepia(${formSliderElement.noUiSlider.get()})`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
   }
   if (evt.target.id === 'effect-marvin') {
-    sliderForm.noUiSlider.updateOptions(stylesSlider.marvin);
-    sliderForm.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `invert(${sliderForm.noUiSlider.get()}%)`;
+    formSliderElement.noUiSlider.updateOptions(stylesSlider.marvin);
+    formSliderElement.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `invert(${formSliderElement.noUiSlider.get()}%)`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
   }
   if (evt.target.id === 'effect-phobos') {
-    sliderForm.noUiSlider.updateOptions(stylesSlider.phobos);
-    sliderForm.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `blur(${sliderForm.noUiSlider.get()}px)`;
+    formSliderElement.noUiSlider.updateOptions(stylesSlider.phobos);
+    formSliderElement.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `blur(${formSliderElement.noUiSlider.get()}px)`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
   }
   if (evt.target.id === 'effect-heat') {
-    sliderForm.noUiSlider.updateOptions(stylesSlider.heat);
-    sliderForm.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `brightness(${sliderForm.noUiSlider.get()})`;
+    formSliderElement.noUiSlider.updateOptions(stylesSlider.heat);
+    formSliderElement.noUiSlider.on('update', () => {
+      bigImgPreview.style.filter = `brightness(${formSliderElement.noUiSlider.get()})`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
   }
-}
+};
 
 effectIcon.addEventListener('click', onClickIconEffect);
 
@@ -292,84 +288,105 @@ scaleInputs.addEventListener('click', (evt) => {
   }
 });
 
+const onNotSuccesMessageClick = (evt) => {
+  if (evt.target === document.querySelector('.success')) {
+    document.querySelector('.success').remove();
+    closeForm();
+    document.removeEventListener('keydown', onNotSuccesMessageClick);
+  }
+};
+
+const unblockSubmitButton = () => {
+  submitButton.disabled = false;
+  submitButton.textContent = 'Опубликовать';
+
+};
+
+const onSuccesMessageKeydown = (evt) => {
+  if (evt.key === 'Escape') {
+    evt.preventDefault();
+    document.querySelector('.success').remove();
+  }
+};
+
 const showSuccesMessage = () => {
   const succesMessage = document
-  .querySelector('#success')
-  .content
-  .querySelector('.success').cloneNode(true);
+    .querySelector('#success')
+    .content
+    .querySelector('.success').cloneNode(true);
+
   document.querySelector('body').append(succesMessage);
-  // console.log('Успешный успех!');
-
-  document.addEventListener(
-    'keydown',
-    (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        succesMessage.remove();
-      }
-    },
-    {once: true}
+  document.addEventListener('keydown',onSuccesMessageKeydown, {once: true}
   );
-
-  function onNotSuccesMessageClick (evt) {
-    if (evt.target === succesMessage) {
-      succesMessage.remove();
-      document.removeEventListener('keydown', onNotSuccesMessageClick);
-    }
-  }
-
   succesMessage.addEventListener('click', onNotSuccesMessageClick);
   document.querySelector('.success__button').addEventListener(
     'click',
     () => {
+      document.removeEventListener('keydown', onSuccesMessageKeydown, {once: true});
       succesMessage.remove();
     },
     {once: true}
   );
+  unblockSubmitButton();
+  closeForm();
+};
+
+const onErrorMessageKeydown = (evt) => {
+  if (evt.key === 'Escape') {
+    evt.preventDefault();
+    document.querySelector('.error').remove();
+    document.removeEventListener('keydown', onErrorMessageKeydown, {once: true});
+    document.addEventListener('keydown', onDocumentKeydown, {once: true});
+  }
+};
+
+const onNotErrorMessageClick = (evt) => {
+  if (evt.target === document.querySelector('.error')) {
+    document.querySelector('.error').remove();
+    document.removeEventListener('keydown', onErrorMessageKeydown, {once: true});
+    document.addEventListener('keydown', onDocumentKeydown, {once: true});
+  }
 };
 
 const showErrorMessage = () => {
-  const errorMessage = document
-  .querySelector('#error')
-  .content
-  .querySelector('.error').cloneNode(true);
-  document.querySelector('body').append(errorMessage);
-  // console.log('Неуспешный неуспех!');
+  unblockSubmitButton();
 
-  document.addEventListener(
-    'keydown',
-    (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        errorMessage.remove();
-      }
-    },
-    {once: true}
+  const errorMessage = document
+    .querySelector('#error')
+    .content
+    .querySelector('.error').cloneNode(true);
+  document.querySelector('body').append(errorMessage);
+
+  document.removeEventListener('keydown', onDocumentKeydown);
+  document.addEventListener('keydown', onErrorMessageKeydown, {once: true}
   );
 
-  function onNotErrorMessageClick (evt) {
-    if (evt.target === errorMessage) {
-      errorMessage.remove();
-      document.removeEventListener('keydown', onNotErrorMessageClick);
-    }
-  }
-
   errorMessage.addEventListener('click', onNotErrorMessageClick);
-  document.querySelector('.error__button').addEventListener(
+
+  const errorButton = document.querySelector('.error__button');
+  errorButton.addEventListener(
     'click',
     () => {
-      errorMessage.remove();
-    },
+      document.querySelector('.error').remove();
+      document.removeEventListener('keydown', onErrorMessageKeydown, {once: true});
+      document.addEventListener('keydown', onDocumentKeydown, {once: true});
+    } ,
     {once: true}
   );
 };
 
-function setFormSubmit (onSucces, onError, evt) {
+const onButtonSubmitClick = (onSucces, onError, evt) => {
   evt.preventDefault();
-  if (fieldHashtags.value.length !== 0 && !pristineValidator.validate()) {
-    // console.log('Не валидны данные!');
+
+  if (hashtagsFieldElement.value.length !== 0 && !pristineValidator.validate(hashtagsFieldElement)) {
     return;
   }
+  if (descriptionElement.value.length !== 0 && !pristineValidator.validate(descriptionElement)) {
+    return;
+  }
+
+  submitButton.disabled = true;
+  submitButton.textContent = 'Отправляю...';
 
   fetch(
     'https://30.javascript.pages.academy/kekstagram',
@@ -378,16 +395,14 @@ function setFormSubmit (onSucces, onError, evt) {
       body: new FormData(evt.target),
     }
   )
-  .then(() => {
-    onSucces();
-    fieldHashtags.value = '';
-    textAreaDescription.value = '';
-  })
-  .catch(() => {
-    onError();
-  });
-}
+    .then(() => {
+      onSucces();
+    })
+    .catch(() => {
+      onError();
+    });
+};
 
 loadingFileForm.addEventListener('submit', (evt) => {
-  setFormSubmit(showSuccesMessage, showErrorMessage, evt);
+  onButtonSubmitClick(showSuccesMessage, showErrorMessage, evt);
 });
