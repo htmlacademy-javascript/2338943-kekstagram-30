@@ -41,6 +41,15 @@ const picturesChecking = (a, b) => {
   return 0;
 };
 
+function debounce (callback, timeoutDelay = 500) {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+
 function throttle (callback, delayBetweenFrames) {
   let lastTime = 0;
 
@@ -54,4 +63,4 @@ function throttle (callback, delayBetweenFrames) {
   };
 }
 
-export {getUniqueNumber, cleareGallery, picturesChecking, throttle};
+export {getUniqueNumber, cleareGallery, picturesChecking, debounce};

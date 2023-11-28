@@ -1,10 +1,10 @@
 import {renderMiniature} from './miniatureRenderer.js';
 import {showPicture} from './pictutre.js';
-import {getUniqueNumber, picturesChecking, throttle} from './util.js';
+import {getUniqueNumber, picturesChecking, debounce} from './util.js';
 
 const RANDOM_PICTURE_QUANTITY = 10;
 const ERROR_MESSAGE_TIMEOUT = 5000;
-const THROTTLE_TIMEOUT = 500;
+const TDEBOUNCE_TIMEOUT = 500;
 
 const renderGallery = (pictures) => {
   const containerMiniatures = document.querySelector('.pictures');
@@ -52,25 +52,22 @@ const renderGallery = (pictures) => {
   const setDefaultFilterButton = (cb) => {
     defaultFilterButton.addEventListener('click', () => {
       setButtonsView(defaultFilterButton.id);
-      renderMiniature(pictures, containerMiniatures);
+      setDefaultFilterButton(pictures, containerMiniatures);
       cb();
     });
   };
-
-  setDefaultFilterButton();
 
   const setRandomFilterButton = (cb) => {
 
     randomFilterButton.addEventListener('click', () => {
       setButtonsView(randomFilterButton.id);
-      const previousValues = [];
       randomPictures = [];
-
+      const previousValues = [];
       for (let i = 0; i < RANDOM_PICTURE_QUANTITY; i++) {
         const number = getUniqueNumber(1, pictures.length - 1, previousValues);
         randomPictures.push(pictures[number]);
       }
-      renderMiniature(randomPictures, containerMiniatures);
+      setRandomFilterButton(randomPictures, containerMiniatures);
       cb();
     });
 
@@ -84,22 +81,22 @@ const renderGallery = (pictures) => {
         .forEach((picture) => {
           picture.remove();
         });
-      renderMiniature(discussedPictures, containerMiniatures);
+      setDiscussedFilterButton(discussedPictures, containerMiniatures);
       cb();
     });
   };
 
-  setDefaultFilterButton(throttle(
+  setDefaultFilterButton(debounce(
     () => renderMiniature(pictures, containerMiniatures),
-    THROTTLE_TIMEOUT,
+    TDEBOUNCE_TIMEOUT,
   ));
-  setRandomFilterButton(throttle(
+  setRandomFilterButton(debounce(
     () => renderMiniature(randomPictures, containerMiniatures),
-    THROTTLE_TIMEOUT,
+    TDEBOUNCE_TIMEOUT,
   ));
-  setDiscussedFilterButton(throttle(
+  setDiscussedFilterButton(debounce(
     () => renderMiniature(discussedPictures, containerMiniatures),
-    THROTTLE_TIMEOUT,
+    TDEBOUNCE_TIMEOUT,
   ));
 };
 
