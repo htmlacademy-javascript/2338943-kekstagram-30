@@ -18,12 +18,7 @@ const renderGallery = (pictures) => {
     evt.preventDefault();
 
     const IdMiniature = +miniature.dataset.miniatureId;
-    const dataPicture = pictures.find((picture) => {
-      if (picture.id === IdMiniature) {
-        return picture.id;
-      }
-    });
-
+    const dataPicture = pictures.find(({id}) => id === IdMiniature);
     showPicture(dataPicture);
   });
 
@@ -63,7 +58,7 @@ const renderGallery = (pictures) => {
       randomPictures = [];
       const previousValues = [];
       for (let i = 0; i < RANDOM_PICTURE_QUANTITY; i++) {
-        const number = getUniqueNumber(1, pictures.length - 1, previousValues);
+        const number = getUniqueNumber(0, pictures.length - 1, previousValues);
         randomPictures.push(pictures[number]);
       }
       cb();
