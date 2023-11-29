@@ -2,9 +2,10 @@ const MAX_LENGTH_DESCRIPTION = 140;
 const MAX_QUANTITY_TAGS = 5;
 const MAX_QUANTITY_SYMBOLS_TAG = 20;
 const REGEX_SYMBOLS = /^[a-zа-яё0-9]{1,20}$/i;
+const IMAGE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
 const body = document.querySelector('body');
-const loadingFileForm = document.querySelector('.img-upload__form');
+const loadingFileForm = document.querySelector('#upload-select-image');
 const loadFileButton = loadingFileForm.querySelector('.img-upload__input');
 const uploadOverlayElement = loadingFileForm.querySelector('.img-upload__overlay');
 const cancelButton = loadingFileForm.querySelector('.img-upload__cancel');
@@ -74,8 +75,9 @@ const destroySlider = (sliderElement) => {
     sliderElement.noUiSlider.destroy();
   }
 };
+
 const onDocumentKeydown = (evt) => {
-  if (evt.key === 'Escape') {
+  if (evt.key === 'Escape' && document.activeElement !== descriptionElement && document.activeElement !== hashtagsFieldElement) {
     evt.preventDefault();
     closeForm();
   }
@@ -88,7 +90,7 @@ const showForm = () => {
 
   noUiSlider.create(formSliderElement, stylesSlider.default);
 
-  document.addEventListener('keydown', onDocumentKeydown, {once: true});
+  document.addEventListener('keydown', onDocumentKeydown);
 };
 
 const closeForm = () => {
@@ -98,6 +100,8 @@ const closeForm = () => {
 
   hashtagsFieldElement.value = '';
   descriptionElement.value = '';
+
+  loadingFileForm.reset();
   document.removeEventListener('keydown', onDocumentKeydown);
 };
 
@@ -206,7 +210,22 @@ pristineValidator.addValidator(
   getMessageErrorHashtags,
   true);
 
-const bigImgPreview = loadingFileForm.querySelector('.img-upload__preview img');
+
+const fileChooserElement = loadingFileForm.querySelector('#upload-file');
+const bigImgPreviewElement = loadingFileForm.querySelector('.img-upload__preview img');
+
+fileChooserElement.addEventListener('change', () => {
+  const file = fileChooserElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = IMAGE_TYPES.some((it) => fileName.endsWith(it)
+  );
+
+  if (matches) {
+    bigImgPreviewElement.src = URL.createObjectURL(file);
+  }
+});
+
 const effectIcon = loadingFileForm.querySelector('.effects__list');
 
 const onClickIconEffect = (evt) => {
@@ -216,46 +235,52 @@ const onClickIconEffect = (evt) => {
     return;
   }
   if (evt.target.id === 'effect-none') {
-    bigImgPreview.style.filter = '';
+    // formSliderElement.noUiSlider.reset ();
+    bigImgPreviewElement.style.filter = '';
     loadingFileForm.querySelector('.img-upload__effect-level').classList.add('hidden');
     return;
   }
   if (evt.target.id === 'effect-chrome') {
+    // formSliderElement.noUiSlider.reset ();
     formSliderElement.noUiSlider.updateOptions(stylesSlider.chrome);
     formSliderElement.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `grayscale(${formSliderElement.noUiSlider.get()})`;
+      bigImgPreviewElement.style.filter = `grayscale(${formSliderElement.noUiSlider.get()})`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
   }
   if (evt.target.id === 'effect-sepia') {
+    // formSliderElement.noUiSlider.reset ();
     formSliderElement.noUiSlider.updateOptions(stylesSlider.sepia);
     formSliderElement.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `sepia(${formSliderElement.noUiSlider.get()})`;
+      bigImgPreviewElement.style.filter = `sepia(${formSliderElement.noUiSlider.get()})`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
   }
   if (evt.target.id === 'effect-marvin') {
+    // formSliderElement.noUiSlider.reset ();
     formSliderElement.noUiSlider.updateOptions(stylesSlider.marvin);
     formSliderElement.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `invert(${formSliderElement.noUiSlider.get()}%)`;
+      bigImgPreviewElement.style.filter = `invert(${formSliderElement.noUiSlider.get()}%)`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
   }
   if (evt.target.id === 'effect-phobos') {
+    // formSliderElement.noUiSlider.reset ();
     formSliderElement.noUiSlider.updateOptions(stylesSlider.phobos);
     formSliderElement.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `blur(${formSliderElement.noUiSlider.get()}px)`;
+      bigImgPreviewElement.style.filter = `blur(${formSliderElement.noUiSlider.get()}px)`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
     return;
   }
   if (evt.target.id === 'effect-heat') {
+    // formSliderElement.noUiSlider.reset ();
     formSliderElement.noUiSlider.updateOptions(stylesSlider.heat);
     formSliderElement.noUiSlider.on('update', () => {
-      bigImgPreview.style.filter = `brightness(${formSliderElement.noUiSlider.get()})`;
+      bigImgPreviewElement.style.filter = `brightness(${formSliderElement.noUiSlider.get()})`;
     });
     loadingFileForm.querySelector('.img-upload__effect-level').classList.remove('hidden');
   }
@@ -273,7 +298,7 @@ scaleInputs.addEventListener('click', (evt) => {
   if (evt.target.closest('.scale__control--smaller')) {
     if (scaleValue > 0.25) {
       scaleValue -= 0.25;
-      bigImgPreview.style = `transform: scale(${scaleValue})`;
+      bigImgPreviewElement.style = `transform: scale(${scaleValue})`;
     }
     scaleValueElement.value = `${scaleValue * 100}%`;
     return;
@@ -282,7 +307,7 @@ scaleInputs.addEventListener('click', (evt) => {
   if (evt.target.closest('.scale__control--bigger')) {
     if (scaleValue < 1) {
       scaleValue += 0.25;
-      bigImgPreview.style = `transform: scale(${scaleValue})`;
+      bigImgPreviewElement.style = `transform: scale(${scaleValue})`;
     }
     scaleValueElement.value = `${scaleValue * 100}%`;
   }
@@ -328,6 +353,7 @@ const showSuccesMessage = () => {
     {once: true}
   );
   unblockSubmitButton();
+  loadingFileForm.reset();
   closeForm();
 };
 
@@ -389,7 +415,7 @@ const onButtonSubmitClick = (onSucces, onError, evt) => {
   submitButton.textContent = 'Отправляю...';
 
   fetch(
-    'https://30.javascript.pages.academy/kekstagram',
+    'https://30.javascript.pages.academy/kekstagram/',
     {
       method: 'POST',
       body: new FormData(evt.target),
