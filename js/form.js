@@ -2,10 +2,10 @@ const MAX_LENGTH_DESCRIPTION = 140;
 const MAX_QUANTITY_TAGS = 5;
 const MAX_QUANTITY_SYMBOLS_TAG = 20;
 const REGEX_SYMBOLS = /^[a-zа-яё0-9]{1,20}$/i;
-const TYPES_IMAGE = ['gif', 'jpg', 'jpeg', 'png'];
+const IMAGE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
 const body = document.querySelector('body');
-const loadingFileForm = document.querySelector('.img-upload__form');
+const loadingFileForm = document.querySelector('#upload-select-image');
 const loadFileButton = loadingFileForm.querySelector('.img-upload__input');
 const uploadOverlayElement = loadingFileForm.querySelector('.img-upload__overlay');
 const cancelButton = loadingFileForm.querySelector('.img-upload__cancel');
@@ -75,8 +75,9 @@ const destroySlider = (sliderElement) => {
     sliderElement.noUiSlider.destroy();
   }
 };
+
 const onDocumentKeydown = (evt) => {
-  if (evt.key === 'Escape') {
+  if (evt.key === 'Escape' && document.activeElement !== descriptionElement && document.activeElement !== hashtagsFieldElement) {
     evt.preventDefault();
     closeForm();
   }
@@ -89,7 +90,7 @@ const showForm = () => {
 
   noUiSlider.create(formSliderElement, stylesSlider.default);
 
-  document.addEventListener('keydown', onDocumentKeydown, {once: true});
+  document.addEventListener('keydown', onDocumentKeydown);
 };
 
 const closeForm = () => {
@@ -99,6 +100,8 @@ const closeForm = () => {
 
   hashtagsFieldElement.value = '';
   descriptionElement.value = '';
+
+  loadingFileForm.reset();
   document.removeEventListener('keydown', onDocumentKeydown);
 };
 
@@ -215,7 +218,7 @@ fileChooserElement.addEventListener('change', () => {
   const file = fileChooserElement.files[0];
   const fileName = file.name.toLowerCase();
 
-  const matches = TYPES_IMAGE.some((it) => fileName.endsWith(it)
+  const matches = IMAGE_TYPES.some((it) => fileName.endsWith(it)
   );
 
   if (matches) {
@@ -232,11 +235,13 @@ const onClickIconEffect = (evt) => {
     return;
   }
   if (evt.target.id === 'effect-none') {
+    // formSliderElement.noUiSlider.reset ();
     bigImgPreviewElement.style.filter = '';
     loadingFileForm.querySelector('.img-upload__effect-level').classList.add('hidden');
     return;
   }
   if (evt.target.id === 'effect-chrome') {
+    // formSliderElement.noUiSlider.reset ();
     formSliderElement.noUiSlider.updateOptions(stylesSlider.chrome);
     formSliderElement.noUiSlider.on('update', () => {
       bigImgPreviewElement.style.filter = `grayscale(${formSliderElement.noUiSlider.get()})`;
@@ -245,6 +250,7 @@ const onClickIconEffect = (evt) => {
     return;
   }
   if (evt.target.id === 'effect-sepia') {
+    // formSliderElement.noUiSlider.reset ();
     formSliderElement.noUiSlider.updateOptions(stylesSlider.sepia);
     formSliderElement.noUiSlider.on('update', () => {
       bigImgPreviewElement.style.filter = `sepia(${formSliderElement.noUiSlider.get()})`;
@@ -253,6 +259,7 @@ const onClickIconEffect = (evt) => {
     return;
   }
   if (evt.target.id === 'effect-marvin') {
+    // formSliderElement.noUiSlider.reset ();
     formSliderElement.noUiSlider.updateOptions(stylesSlider.marvin);
     formSliderElement.noUiSlider.on('update', () => {
       bigImgPreviewElement.style.filter = `invert(${formSliderElement.noUiSlider.get()}%)`;
@@ -261,6 +268,7 @@ const onClickIconEffect = (evt) => {
     return;
   }
   if (evt.target.id === 'effect-phobos') {
+    // formSliderElement.noUiSlider.reset ();
     formSliderElement.noUiSlider.updateOptions(stylesSlider.phobos);
     formSliderElement.noUiSlider.on('update', () => {
       bigImgPreviewElement.style.filter = `blur(${formSliderElement.noUiSlider.get()}px)`;
@@ -269,6 +277,7 @@ const onClickIconEffect = (evt) => {
     return;
   }
   if (evt.target.id === 'effect-heat') {
+    // formSliderElement.noUiSlider.reset ();
     formSliderElement.noUiSlider.updateOptions(stylesSlider.heat);
     formSliderElement.noUiSlider.on('update', () => {
       bigImgPreviewElement.style.filter = `brightness(${formSliderElement.noUiSlider.get()})`;
@@ -344,6 +353,7 @@ const showSuccesMessage = () => {
     {once: true}
   );
   unblockSubmitButton();
+  loadingFileForm.reset();
   closeForm();
 };
 
@@ -405,7 +415,7 @@ const onButtonSubmitClick = (onSucces, onError, evt) => {
   submitButton.textContent = 'Отправляю...';
 
   fetch(
-    'https://30.javascript.pages.academy/kekstagram',
+    'https://30.javascript.pages.academy/kekstagram/',
     {
       method: 'POST',
       body: new FormData(evt.target),
