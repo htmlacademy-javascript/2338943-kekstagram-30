@@ -80,7 +80,11 @@ const updateSlider = (sliderElement) => {
 const onDocumentKeydown = (evt) => {
   if (evt.key === 'Escape' && document.activeElement !== descriptionElement && document.activeElement !== hashtagsFieldElement) {
     evt.preventDefault();
-    closeForm();
+    uploadOverlayElement.classList.add('hidden');
+    body.classList.remove('modal-open');
+    updateSlider(formSliderElement);
+    loadingFileForm.reset();
+    document.removeEventListener('keydown', onDocumentKeydown);
   }
 };
 
@@ -96,6 +100,14 @@ const unblockSubmitButton = () => {
   submitButton.disabled = false;
   submitButton.textContent = 'Опубликовать';
 };
+
+const pristineValidator = new Pristine(loadingFileForm, {
+  classTo: 'img-upload__field-wrapper',
+  errorTextParent: 'img-upload__field-wrapper',
+  errorTextClass: 'img-upload__field-wrapper__error',
+  errorTextTag: 'p',
+},
+true);
 
 const showForm = () => {
   pristineValidator.reset();
@@ -129,14 +141,6 @@ const onButtonCloseHideForm = () => {
 cancelButton.addEventListener('click', onButtonCloseHideForm);
 loadFileButton.addEventListener('change', onButtonShowForm);
 submitButton.removeEventListener('click', onDocumentKeydown);
-
-const pristineValidator = new Pristine(loadingFileForm, {
-  classTo: 'img-upload__field-wrapper',
-  errorTextParent: 'img-upload__field-wrapper',
-  errorTextClass: 'img-upload__field-wrapper__error',
-  errorTextTag: 'p',
-},
-true);
 
 const validator = {
   isHashtagsValid: (valueField) => {
