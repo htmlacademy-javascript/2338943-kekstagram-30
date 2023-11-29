@@ -3,6 +3,7 @@ const getPictures = (onSuccess, onError) => fetch(
 )
   .then((responce) => {
     if (!responce.ok) {
+      onError();
       throw new Error();
     }
     return responce.json();

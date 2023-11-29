@@ -8,13 +8,14 @@ const counterShownComments = bigPicture.querySelector('.social__comment-shown-co
 const counterTotalComments = bigPicture.querySelector('.social__comment-total-count');
 const loaderComments = bigPicture.querySelector('.comments-loader');
 
+let quantityShownComments = 0;
+let comments = [];
+
 const sampleComment = document
   .querySelector('#comment')
   .content
   .querySelector('.social__comment');
 
-let quantityShownComments = 0;
-let comments = [];
 
 const createComment = ({avatar, message, name}) => {
   const newComment = sampleComment.cloneNode(true);
@@ -48,7 +49,6 @@ const renderComments = () => {
   counterShownComments.textContent = quantityShownComments;
   counterTotalComments.textContent = comments.length;
 };
-
 const onLoaderCommentsClick = () => {
   renderComments();
 };
@@ -63,6 +63,9 @@ const hidePicture = () => {
 const onCloseBigPictureButtonClick = () => {
   hidePicture();
 };
+
+buttonClosePicture.addEventListener('click', onCloseBigPictureButtonClick);
+loaderComments.addEventListener('click', onLoaderCommentsClick);
 
 function onDocumentsKeyDown (evt) {
   if (evt.key === 'Escape') {
@@ -84,14 +87,11 @@ const showPicture = (dataPicture) => {
   document.addEventListener('keydown', onDocumentsKeyDown);
 
   comments = dataPicture.comments;
-  if (comments.length > 0) {
+  if (comments.length - 1 > 0) {
     renderComments();
   }
   renderPicture(dataPicture);
 };
-
-buttonClosePicture.addEventListener('click', onCloseBigPictureButtonClick);
-loaderComments.addEventListener('click', onLoaderCommentsClick);
 
 export {showPicture};
 
