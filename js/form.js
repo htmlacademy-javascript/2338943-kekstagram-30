@@ -6,7 +6,7 @@ const IMAGE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
 const body = document.querySelector('body');
 const loadingFileForm = document.querySelector('#upload-select-image');
-const loadFileButton = loadingFileForm.querySelector('.img-upload__input');
+
 const uploadOverlayElement = loadingFileForm.querySelector('.img-upload__overlay');
 const cancelButton = loadingFileForm.querySelector('.img-upload__cancel');
 const hashtagsFieldElement = loadingFileForm.querySelector('.text__hashtags');
@@ -14,6 +14,8 @@ const descriptionElement = loadingFileForm.querySelector('.text__description');
 const submitButton = document.querySelector('#upload-submit');
 const formSliderElement = loadingFileForm.querySelector('.effect-level__slider');
 const effectIcon = loadingFileForm.querySelector('.effects__list');
+const fileChooserElement = loadingFileForm.querySelector('#upload-file');
+const bigImgPreviewElement = loadingFileForm.querySelector('.img-upload__preview img');
 const stylesSlider = {
   default: {
     range: {
@@ -77,13 +79,18 @@ const updateSlider = (sliderElement) => {
   }
 };
 
+const isActiveElements = () =>
+  document.activeElement !== descriptionElement &&
+  document.activeElement !== hashtagsFieldElement;
+
 const onDocumentKeydown = (evt) => {
-  if (evt.key === 'Escape' && document.activeElement !== descriptionElement && document.activeElement !== hashtagsFieldElement) {
+  if (evt.key === 'Escape' && isActiveElements()) {
     evt.preventDefault();
     uploadOverlayElement.classList.add('hidden');
     body.classList.remove('modal-open');
     updateSlider(formSliderElement);
     loadingFileForm.reset();
+    bigImgPreviewElement.style.filter = '';
     document.removeEventListener('keydown', onDocumentKeydown);
   }
 };
@@ -104,7 +111,7 @@ const unblockSubmitButton = () => {
 const pristineValidator = new Pristine(loadingFileForm, {
   classTo: 'img-upload__field-wrapper',
   errorTextParent: 'img-upload__field-wrapper',
-  errorTextClass: 'img-upload__field-wrapper__error',
+  errorTextClass: 'img-upload__field-wrapper--error',
   errorTextTag: 'p',
 },
 true);
@@ -127,6 +134,7 @@ const closeForm = () => {
   descriptionElement.value = '';
 
   loadingFileForm.reset();
+  bigImgPreviewElement.style.filter = '';
   document.removeEventListener('keydown', onDocumentKeydown);
 };
 
@@ -137,10 +145,6 @@ const onButtonShowForm = () => {
 const onButtonCloseHideForm = () => {
   closeForm();
 };
-
-cancelButton.addEventListener('click', onButtonCloseHideForm);
-loadFileButton.addEventListener('change', onButtonShowForm);
-submitButton.removeEventListener('click', onDocumentKeydown);
 
 const validator = {
   isHashtagsValid: (valueField) => {
@@ -228,24 +232,8 @@ pristineValidator.addValidator(
   hashtagsFieldElement,
   validator.isHashtagsValid,
   getMessageErrorHashtags,
-  true);
-
-
-const fileChooserElement = loadingFileForm.querySelector('#upload-file');
-const bigImgPreviewElement = loadingFileForm.querySelector('.img-upload__preview img');
-
-fileChooserElement.addEventListener('change', () => {
-  const file = fileChooserElement.files[0];
-  const fileName = file.name.toLowerCase();
-
-  const matches = IMAGE_TYPES.some((it) => fileName.endsWith(it)
-  );
-
-  if (matches) {
-    bigImgPreviewElement.src = URL.createObjectURL(file);
-  }
-});
-
+  true
+);
 
 const onClickIconEffect = (evt) => {
   if (!evt.target.id) {
@@ -304,25 +292,6 @@ const scaleValueElement = scaleInputs.querySelector('.scale__control--value');
 let scaleValue = 1;
 
 scaleValueElement.value = `${scaleValue * 100}%`;
-
-scaleInputs.addEventListener('click', (evt) => {
-  if (evt.target.closest('.scale__control--smaller')) {
-    if (scaleValue > 0.25) {
-      scaleValue -= 0.25;
-      bigImgPreviewElement.style = `transform: scale(${scaleValue})`;
-    }
-    scaleValueElement.value = `${scaleValue * 100}%`;
-    return;
-  }
-
-  if (evt.target.closest('.scale__control--bigger')) {
-    if (scaleValue < 1) {
-      scaleValue += 0.25;
-      bigImgPreviewElement.style = `transform: scale(${scaleValue})`;
-    }
-    scaleValueElement.value = `${scaleValue * 100}%`;
-  }
-});
 
 const onNotSuccesMessageClick = (evt) => {
   if (evt.target === document.querySelector('.success')) {
@@ -438,6 +407,39 @@ const onButtonSubmitClick = (onSuccess, onError, evt) => {
     });
 };
 
+cancelButton.addEventListener('click', onButtonCloseHideForm);
+scaleInputs.addEventListener('click', (evt) => {
+  if (evt.target.closest('.scale__control--smaller')) {
+    if (scaleValue > 0.25) {
+      scaleValue -= 0.25;
+      bigImgPreviewElement.style = `transform: scale(${scaleValue})`;
+    }
+    scaleValueElement.value = `${scaleValue * 100}%`;
+    return;
+  }
+
+  if (evt.target.closest('.scale__control--bigger')) {
+    if (scaleValue < 1) {
+      scaleValue += 0.25;
+      bigImgPreviewElement.style = `transform: scale(${scaleValue})`;
+    }
+    scaleValueElement.value = `${scaleValue * 100}%`;
+  }
+});
+fileChooserElement.addEventListener('change', () => {
+  const file = fileChooserElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = IMAGE_TYPES.some((it) => fileName.endsWith(it)
+  );
+
+  if (matches) {
+    bigImgPreviewElement.src = URL.createObjectURL(file);
+  }
+});
 loadingFileForm.addEventListener('submit', (evt) => {
   onButtonSubmitClick(showSuccesMessage, showErrorMessage, evt);
 });
+submitButton.removeEventListener('click', onDocumentKeydown);
+
+export {onButtonShowForm};

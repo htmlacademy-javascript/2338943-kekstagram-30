@@ -7,9 +7,9 @@ const ERROR_MESSAGE_TIMEOUT = 5000;
 const DEBOUNCE_TIMEOUT = 500;
 
 const renderGallery = (pictures) => {
-  const containerMiniatures = document.querySelector('.pictures');
+  const miniaturesContainer = document.querySelector('.pictures');
 
-  containerMiniatures.addEventListener('click', (evt) => {
+  miniaturesContainer.addEventListener('click', (evt) => {
     const miniature = evt.target.closest('[data-miniature-id]');
 
     if (!miniature) {
@@ -17,9 +17,9 @@ const renderGallery = (pictures) => {
     }
     evt.preventDefault();
 
-    const IdMiniature = +miniature.dataset.miniatureId;
-    const dataPicture = pictures.find(({id}) => id === IdMiniature);
-    showPicture(dataPicture);
+    const miniatureId = +miniature.dataset.miniatureId;
+    const pictureData = pictures.find(({id}) => id === miniatureId);
+    showPicture(pictureData);
   });
 
   const filtersElement = document.querySelector('.img-filters');
@@ -33,16 +33,16 @@ const renderGallery = (pictures) => {
   const setButtonsView = (activeButtonId) => {
     filterButtons.forEach((button) => {
       if (button.id !== activeButtonId) {
-        button.classList.remove('img-filters__button--active');
+        button.classList.toggle('img-filters__button--active', false);
       } else {
-        button.classList.add('img-filters__button--active');
+        button.classList.toggle('img-filters__button--active', true);
       }
     });
   };
 
   filtersElement.classList.remove('img-filters--inactive');
 
-  renderMiniature(pictures, containerMiniatures);
+  renderMiniature(pictures, miniaturesContainer);
 
   const setDefaultFilterButton = (cb) => {
     defaultFilterButton.addEventListener('click', () => {
@@ -69,9 +69,8 @@ const renderGallery = (pictures) => {
   const setDiscussedFilterButton = (cb) => {
     discussedFilterButton.addEventListener('click', () => {
       setButtonsView(discussedFilterButton.id);
-      document.querySelector('.pictures')
-        .querySelectorAll('.picture')
-        .forEach((picture) => {
+      document.querySelectorAll('.pictures .picture').forEach(
+        (picture) => {
           picture.remove();
         });
       cb();
@@ -79,20 +78,20 @@ const renderGallery = (pictures) => {
   };
 
   setDefaultFilterButton(debounce(
-    () => renderMiniature(pictures, containerMiniatures),
+    () => renderMiniature(pictures, miniaturesContainer),
     DEBOUNCE_TIMEOUT,
   ));
   setRandomFilterButton(debounce(
-    () => renderMiniature(randomPictures, containerMiniatures),
+    () => renderMiniature(randomPictures, miniaturesContainer),
     DEBOUNCE_TIMEOUT,
   ));
   setDiscussedFilterButton(debounce(
-    () => renderMiniature(discussedPictures, containerMiniatures),
+    () => renderMiniature(discussedPictures, miniaturesContainer),
     DEBOUNCE_TIMEOUT,
   ));
 };
 
-const showErrorGetingsData = () => {
+const showErrorMessage = () => {
   document.querySelector('body').append(
     document
       .querySelector('#data-error')
@@ -105,4 +104,4 @@ const showErrorGetingsData = () => {
   }, ERROR_MESSAGE_TIMEOUT);
 };
 
-export {renderGallery, showErrorGetingsData};
+export {renderGallery, showErrorMessage};
