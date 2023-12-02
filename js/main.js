@@ -5,5 +5,4 @@ import {onButtonShowForm} from './form.js';
 const loadFileButton = document.querySelector('.img-upload__input');
 
 getPictures(renderGallery, showErrorMessage);
-
 loadFileButton.addEventListener('change', onButtonShowForm);
