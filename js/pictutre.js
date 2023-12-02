@@ -2,12 +2,10 @@ const VISIBLE_COMMENTS_QUANTITY = 5;
 const bigPictureElement = document.querySelector('.big-picture');
 const bodyElement = document.querySelector('body');
 const closePictureButton = document.querySelector('.big-picture__cancel');
-
 const listCommentsElement = bigPictureElement.querySelector('.social__comments');
 const shownCommentsCounterElement = bigPictureElement.querySelector('.social__comment-shown-count');
 const totalCommentsCounterElement = bigPictureElement.querySelector('.social__comment-total-count');
 const loaderCommentsElement = bigPictureElement.querySelector('.comments-loader');
-
 let shownCommentsQuantity = 0;
 let comments = [];
 
